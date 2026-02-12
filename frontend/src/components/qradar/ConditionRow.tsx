@@ -1,5 +1,5 @@
 import React from 'react';
-import { QRadarTest, QRadarTestParam } from '../../data/qradar-tests';
+import type { QRadarTest, QRadarTestParam } from '../../data/qradar-tests';
 
 interface ConditionRowProps {
     condition: {

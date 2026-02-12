@@ -1,6 +1,6 @@
 import React from 'react';
 import ConditionRow from './ConditionRow';
-import { QRadarTest, QRadarTestParam } from '../../data/qradar-tests';
+import type { QRadarTest, QRadarTestParam } from '../../data/qradar-tests';
 
 export interface Condition {
     id: string;

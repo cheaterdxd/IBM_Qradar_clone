@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { QRADAR_TESTS, TEST_GROUP_NAMES, QRadarTest } from '../../data/qradar-tests';
+import { QRADAR_TESTS, TEST_GROUP_NAMES } from '../../data/qradar-tests';
+import type { QRadarTest } from '../../data/qradar-tests';
 
 interface TestBrowserProps {
     selectedTestId: string | null;

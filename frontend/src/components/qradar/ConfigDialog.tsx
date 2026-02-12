@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QRadarTestParam } from '../../data/qradar-tests';
+import type { QRadarTestParam } from '../../data/qradar-tests';
 
 interface ConfigDialogProps {
     isOpen: boolean;
