@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Rules from './Rules';
-import BuildingBlocks from './BuildingBlocks';
-import TestRule from './TestRule';
+import Rules from './Rules.tsx';
+import BuildingBlocks from './BuildingBlocks.tsx';
+import TestRule from './TestRule.tsx';
 import '../styles/glassmorphism.css';
 
 const Dashboard: React.FC = () => {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import Login from './components/Login.tsx';
+import Dashboard from './components/Dashboard.tsx';
 import './styles/glassmorphism.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
