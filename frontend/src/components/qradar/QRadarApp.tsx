@@ -3,6 +3,7 @@ import QRadarHeader from './QRadarHeader';
 import QRadarTabs from './QRadarTabs';
 import WizardSteps from './WizardSteps';
 import RuleNameBar from './RuleNameBar';
+import TestBrowser from './TestBrowser';
 import TestStack from './TestStack';
 import type { Condition } from './TestStack';
 import WizardFooter from './WizardFooter';
