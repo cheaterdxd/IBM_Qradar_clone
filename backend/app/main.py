@@ -47,9 +47,10 @@ async def health_check():
     return {"status": "healthy"}
 
 
-# Import and include routers (will be added later)
-# from app.api.routes import auth, rules, building_blocks, test
-# app.include_router(auth.router, prefix=f"{settings.API_PREFIX}/auth", tags=["auth"])
-# app.include_router(rules.router, prefix=f"{settings.API_PREFIX}/rules", tags=["rules"])
-# app.include_router(building_blocks.router, prefix=f"{settings.API_PREFIX}/building-blocks", tags=["building-blocks"])
-# app.include_router(test.router, prefix=f"{settings.API_PREFIX}/test", tags=["test"])
+# Import and include routers
+from app.api.routes import auth, rules, building_blocks, test
+
+app.include_router(auth.router, prefix=f"{settings.API_PREFIX}/auth", tags=["auth"])
+app.include_router(rules.router, prefix=f"{settings.API_PREFIX}/rules", tags=["rules"])
+app.include_router(building_blocks.router, prefix=f"{settings.API_PREFIX}/building-blocks", tags=["building-blocks"])
+app.include_router(test.router, prefix=f"{settings.API_PREFIX}/test", tags=["test"])
