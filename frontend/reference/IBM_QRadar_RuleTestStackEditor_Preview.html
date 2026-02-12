@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IBM QRadar — Rule Test Stack Editor (UI Clone)</title>
+<style>
+  /* ====== RESET & BASE ====== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    font-size: 12px;
+    color: #333;
+    background: #F0F4F8;
+    min-width: 1280px;
+  }
+  a { color: #0066CC; text-decoration: underline; cursor: pointer; }
+  a:hover { color: #004999; }
+
+  /* ====== HEADER ====== */
+  .qr-header {
+    background: #003366;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .qr-logo {
+    display: flex; align-items: center; gap: 8px; color: white; font-size: 14px; font-weight: bold;
+  }
+  .qr-logo-box {
+    background: white; color: #003366;
+    font-size: 13px; font-weight: bold;
+    padding: 2px 6px; letter-spacing: -1px;
+  }
+  .qr-product-name { flex: 1; font-size: 14px; font-weight: bold; margin-left: 12px; }
+  .qr-header-right { display: flex; align-items: center; gap: 16px; font-size: 12px; }
+  .qr-header-right a { color: #9ABBE0; text-decoration: none; }
+  .qr-help-btn {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1px solid #9ABBE0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: white; cursor: pointer;
+  }
+
+  /* ====== TAB NAV ====== */
+  .qr-tabs {
+    background: #2B4F7A;
+    height: 30px;
+    display: flex;
+    align-items: stretch;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .qr-tab {
+    padding: 0 14px;
+    display: flex; align-items: center;
+    color: #9ABBE0; font-size: 12px;
+    cursor: pointer; text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .qr-tab:hover { color: white; }
+  .qr-tab.active { color: white; border-bottom-color: white; background: #3A6EA5; }
+
+  /* ====== STEP WIZARD BAR ====== */
+  .qr-wizard-steps {
+    background: #E8EEF4;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .qr-step { color: #666; }
+  .qr-step.done { color: #0066CC; cursor: pointer; text-decoration: underline; }
+  .qr-step.current { color: #003366; font-weight: bold; text-decoration: none; }
+  .qr-step-sep { color: #999; margin: 0 6px; }
+
+  /* ====== MAIN CONTENT ====== */
+  .qr-wizard-content {
+    padding: 10px 14px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* ====== RULE NAME BAR ====== */
+  .qr-rule-name-bar {
+    background: #EBF0F6;
+    border: 1px solid #CCCCCC;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .qr-rule-name-bar label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: bold; }
+  .qr-rule-name-bar input {
+    border: 1px solid #999;
+    height: 22px; padding: 2px 6px;
+    font-family: Arial; font-size: 12px;
+    background: white;
+  }
+  .qr-rule-name-input { width: 320px; }
+  .qr-notes-input { width: 260px; }
+  .qr-rule-name-bar .notes-label { font-weight: normal; }
+
+  /* ====== TWO-PANEL LAYOUT ====== */
+  .qr-test-editor {
+    display: flex;
+    gap: 0;
+    height: 540px;
+    border: 1px solid #AAAAAA;
+  }
+
+  /* Panel Headers */
+  .panel-header {
+    background: #C4D8EB;
+    color: #003366;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-bottom: 1px solid #AAAAAA;
+  }
+
+  /* ====== PANEL A: TEST BROWSER ====== */
+  .qr-test-browser {
+    width: 380px;
+    min-width: 380px;
+    border-right: 2px solid #AAAAAA;
+    display: flex;
+    flex-direction: column;
+    background: white;
+  }
+  .filter-area {
+    background: #F5F5F5;
+    padding: 7px 8px;
+    border-bottom: 1px solid #CCCCCC;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .filter-row { display: flex; align-items: center; gap: 6px; }
+  .filter-row label { font-size: 11px; color: #333; min-width: 68px; }
+  .filter-row input, .filter-row select {
+    border: 1px solid #AAAAAA;
+    height: 20px; padding: 1px 4px;
+    font-family: Arial; font-size: 11px;
+    flex: 1;
+  }
+  .test-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    background: white;
+    border-bottom: 1px solid #CCCCCC;
+  }
+  .test-item {
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #333;
+    cursor: pointer;
+    border-bottom: 1px solid #EEEEEE;
+    line-height: 1.4;
+  }
+  .test-item:hover { background: #D9EAF7; }
+  .test-item.selected { background: #0066CC; color: white; }
+  .test-group-label {
+    background: #E8EEF4;
+    color: #003366;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 0.5px;
+    cursor: default;
+    border-bottom: 1px solid #CCCCCC;
+    text-transform: uppercase;
+  }
+  .add-btn-area {
+    padding: 8px;
+    background: #F5F5F5;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .btn-add {
+    background: #E8E8E8;
+    border: 1px solid #999;
+    padding: 4px 14px;
+    font-family: Arial; font-size: 12px;
+    cursor: pointer;
+    color: #333;
+  }
+  .btn-add:hover { background: #DDEEFF; border-color: #0066CC; }
+
+  /* ====== PANEL B: TEST STACK ====== */
+  .qr-test-stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    overflow: hidden;
+  }
+  .logic-connector {
+    background: #F0F4F8;
+    padding: 6px 10px;
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .logic-connector select {
+    border: 1px solid #999;
+    height: 20px; padding: 0 4px;
+    font-family: Arial; font-size: 12px;
+    font-weight: bold; color: #003366;
+  }
+
+  .condition-stack {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
+  }
+  .condition-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 5px 10px 5px 6px;
+    border-bottom: 1px solid #EEEEEE;
+    font-size: 12px;
+    line-height: 1.5;
+    cursor: default;
+  }
+  .condition-row:hover { background: #F5FBFF; }
+  .condition-row.selected-row { background: #D9EAF7; border-left: 3px solid #0066CC; }
+
+  .delete-btn {
+    background: none;
+    border: 1px solid #CC0000;
+    color: #CC0000;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: Arial;
+    width: 16px; height: 16px;
+    min-width: 16px;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 8px;
+    margin-top: 1px;
+    padding: 0;
+    line-height: 1;
+  }
+  .delete-btn:hover { background: #CC0000; color: white; }
+
+  .condition-text { color: #333; line-height: 1.5; flex: 1; }
+  .condition-text .and-when { color: #555; }
+  .config-link {
+    color: #0066CC;
+    text-decoration: underline;
+    cursor: pointer;
+    font-style: normal;
+  }
+  .config-link:hover { color: #004999; }
+  .config-link.configured {
+    background: #EBF5FF;
+    border: 1px solid #99CCFF;
+    padding: 0 3px;
+    border-radius: 2px;
+  }
+
+  .stack-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  /* ====== WIZARD FOOTER ====== */
+  .qr-wizard-footer {
+    background: #D5DEE8;
+    border-top: 2px solid #AAAAAA;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .btn-back, .btn-cancel {
+    background: #E8E8E8;
+    border: 1px solid #999;
+    padding: 5px 18px;
+    font-family: Arial; font-size: 12px;
+    color: #333; cursor: pointer;
+  }
+  .btn-back:hover, .btn-cancel:hover { background: #D0D8E0; }
+  .btn-next {
+    background: #0066CC;
+    border: none;
+    padding: 5px 22px;
+    font-family: Arial; font-size: 12px;
+    font-weight: bold; color: white;
+    cursor: pointer;
+  }
+  .btn-next:hover { background: #004999; }
+
+  /* ====== MODAL DIALOG OVERLAY ====== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white;
+    border: 1px solid #666;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+    width: 460px;
+    flex-direction: column;
+    display: flex;
+  }
+  .modal-title {
+    background: #0066CC;
+    color: white;
+    font-size: 12px; font-weight: bold;
+    padding: 6px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close-btn {
+    background: none; border: none; color: white;
+    cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .modal-body { padding: 14px; }
+  .modal-field { margin-bottom: 10px; }
+  .modal-field label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+  .modal-field input {
+    width: 100%;
+    border: 1px solid #999;
+    height: 22px; padding: 2px 6px;
+    font-family: Arial; font-size: 12px;
+  }
+  .modal-list-wrapper {
+    display: flex; gap: 8px; margin-bottom: 10px;
+  }
+  .modal-list-pane { flex: 1; }
+  .modal-list-pane label { font-size: 11px; font-weight: bold; color: #333; display: block; margin-bottom: 4px; }
+  .modal-list-box {
+    border: 1px solid #CCCCCC;
+    height: 120px;
+    overflow-y: auto;
+    background: white;
+  }
+  .modal-list-box .mlist-item {
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #333;
+  }
+  .modal-list-box .mlist-item:hover { background: #D9EAF7; }
+  .modal-list-box .mlist-item.sel { background: #0066CC; color: white; }
+  .modal-manual { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; }
+  .modal-manual label { font-size: 11px; white-space: nowrap; }
+  .modal-manual input { flex: 1; border: 1px solid #999; height: 20px; padding: 1px 4px; font-size: 11px; font-family: Arial; }
+  .modal-manual .btn-sm {
+    background: #E8E8E8; border: 1px solid #999;
+    padding: 2px 10px; font-size: 11px; cursor: pointer;
+  }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding-top: 8px; border-top: 1px solid #EEEEEE; }
+  .btn-submit { background: #0066CC; color: white; border: none; padding: 4px 16px; font-size: 12px; cursor: pointer; }
+  .btn-submit:hover { background: #004999; }
+  .btn-dialog-cancel { background: #E8E8E8; border: 1px solid #999; padding: 4px 16px; font-size: 12px; cursor: pointer; }
+
+  /* ====== APP WRAPPER ====== */
+  .qr-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Error message */
+  .error-msg {
+    background: #FFEEEE;
+    border: 1px solid #CC0000;
+    color: #CC0000;
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="qr-app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="qr-header">
+    <div class="qr-logo">
+      <span class="qr-logo-box">IBM</span>
+    </div>
+    <span class="qr-product-name">IBM Security QRadar SIEM</span>
+    <div class="qr-header-right">
+      <a href="#">admin ▾</a>
+      <div class="qr-help-btn">?</div>
+    </div>
+  </header>
+
+  <!-- ===== TAB NAV ===== -->
+  <nav class="qr-tabs">
+    <a class="qr-tab">Dashboard</a>
+    <a class="qr-tab active">Offenses</a>
+    <a class="qr-tab">Log Activity</a>
+    <a class="qr-tab">Network Activity</a>
+    <a class="qr-tab">Assets</a>
+    <a class="qr-tab">Reports</a>
+    <a class="qr-tab">Admin</a>
+  </nav>
+
+  <!-- ===== WIZARD STEPS ===== -->
+  <div class="qr-wizard-steps">
+    <a class="qr-step done">1. Introduction</a>
+    <span class="qr-step-sep">›</span>
+    <a class="qr-step done">2. Type of Rule</a>
+    <span class="qr-step-sep">›</span>
+    <span class="qr-step current">3. Rule Test Stack Editor</span>
+    <span class="qr-step-sep">›</span>
+    <span class="qr-step">4. Rule Response</span>
+    <span class="qr-step-sep">›</span>
+    <span class="qr-step">5. Rule Name / Summary</span>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="qr-wizard-content">
+
+    <!-- Rule Name Bar -->
+    <div class="qr-rule-name-bar">
+      <label>Rule Name: <input type="text" class="qr-rule-name-input" id="ruleName" value="My Custom Event Rule" /></label>
+      <label class="notes-label">Notes: <input type="text" class="qr-notes-input" placeholder="Optional description..." /></label>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-msg" id="errorMsg">
+      ⚠ You must add at least one test condition to the rule before proceeding.
+    </div>
+
+    <!-- Two-panel editor -->
+    <div class="qr-test-editor">
+
+      <!-- ============ PANEL A: TEST BROWSER ============ -->
+      <div class="qr-test-browser">
+        <div class="panel-header">Rule Tests</div>
+        <div class="filter-area">
+          <div class="filter-row">
+            <label>Filter:</label>
+            <input type="text" id="testFilter" placeholder="Type to filter tests..." oninput="filterTests()" />
+          </div>
+          <div class="filter-row">
+            <label>Test Group:</label>
+            <select id="testGroup" onchange="filterTests()">
+              <option value="">All Tests</option>
+              <option value="event">Event Property Tests</option>
+              <option value="ip">IP / Port Tests</option>
+              <option value="logsource">Log Source Tests</option>
+              <option value="network">Network Property Tests</option>
+              <option value="refdata">Reference Data Tests</option>
+              <option value="function">Function Tests</option>
+              <option value="datetime">Date / Time Tests</option>
+            </select>
+          </div>
+        </div>
+
+        <ul class="test-list" id="testList">
+          <!-- Populated by JS -->
+        </ul>
+
+        <div class="add-btn-area">
+          <button class="btn-add" onclick="addSelectedTest()">Add &raquo;</button>
+        </div>
+      </div>
+
+      <!-- ============ PANEL B: TEST STACK ============ -->
+      <div class="qr-test-stack">
+        <div class="panel-header">Tests</div>
+        <div class="logic-connector">
+          Apply this rule when
+          <select id="logicSelect">
+            <option>ALL</option>
+            <option>ANY</option>
+          </select>
+          of the following conditions match:
+        </div>
+
+        <ul class="condition-stack" id="conditionStack">
+          <li class="stack-empty" id="emptyMsg">
+            No tests have been added to this rule.<br>
+            Select a test from the left panel and click <em>Add »</em> to begin.
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- end qr-test-editor -->
+  </div><!-- end qr-wizard-content -->
+
+  <!-- ===== WIZARD FOOTER ===== -->
+  <footer class="qr-wizard-footer">
+    <button class="btn-back">&#8249; Back</button>
+    <button class="btn-next" onclick="handleNext()">Next &#8250;</button>
+    <button class="btn-cancel">Cancel</button>
+  </footer>
+</div>
+
+<!-- ===== MODAL DIALOG ===== -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="modalTitle">Configure Value</span>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- dynamic content -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+const ALL_TESTS = [
+  // Event Property Tests
+  { id: 'evt-search', group: 'event', text: 'when the event matches this search filter', params: [{key: 'filter', label: 'Search Filter', type: 'text', placeholder: 'e.g. severity > 5'}] },
+  { id: 'evt-qid', group: 'event', text: 'when the event QID is one of the following QIDs', params: [{key: 'qids', label: 'QIDs', type: 'multiselect', options: ['5000001 (Authentication Failure)', '5000002 (Login Success)', '3250008 (Firewall Permit)', '4000100 (Malware Detection)', '6001001 (Port Scan)']}] },
+  { id: 'evt-highcat', group: 'event', text: 'when the event category is one of these high-level categories', params: [{key: 'cats', label: 'Categories', type: 'multiselect', options: ['Authentication', 'Firewall', 'Network Device', 'Malware', 'Suspicious Activity', 'Policy Violation']}] },
+  { id: 'evt-lowcat', group: 'event', text: 'when the event category is one of these low-level categories', params: [{key: 'lcats', label: 'Low Level Categories', type: 'multiselect', options: ['Brute Force', 'Login Failure', 'Login Success', 'Outbound DNS', 'Port Scan', 'DoS Attack']}] },
+  { id: 'evt-severity', group: 'event', text: 'when the event severity is greater than X', params: [{key: 'sev', label: 'Severity Threshold (1-10)', type: 'text', placeholder: 'e.g. 7'}] },
+  { id: 'evt-payload', group: 'event', text: 'when the payload contains this string', params: [{key: 'str', label: 'String', type: 'text', placeholder: 'e.g. SPEEDING'}] },
+
+  // IP / Port Tests
+  { id: 'ip-src', group: 'ip', text: 'when the source IP is one of these IP addresses', params: [{key: 'srcip', label: 'IP Addresses / CIDR', type: 'multiselect', options: ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '10.10.1.0/24', 'Any Local']}] },
+  { id: 'ip-dst', group: 'ip', text: 'when the destination IP is one of these IP addresses', params: [{key: 'dstip', label: 'IP Addresses / CIDR', type: 'multiselect', options: ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '8.8.8.8', '1.1.1.1']}] },
+  { id: 'port-src', group: 'ip', text: 'when the source port is one of these ports', params: [{key: 'sport', label: 'Ports', type: 'multiselect', options: ['22 (SSH)', '80 (HTTP)', '443 (HTTPS)', '3389 (RDP)', '445 (SMB)', '53 (DNS)']}] },
+  { id: 'port-dst', group: 'ip', text: 'when the destination port is one of these ports', params: [{key: 'dport', label: 'Ports', type: 'multiselect', options: ['22 (SSH)', '80 (HTTP)', '443 (HTTPS)', '3389 (RDP)', '445 (SMB)', '53 (DNS)', '21 (FTP)']}] },
+  { id: 'ip-srcordst', group: 'ip', text: 'when the source or destination IP is one of these IP addresses', params: [{key: 'ipset', label: 'IP Addresses', type: 'multiselect', options: ['10.0.0.0/8', '172.16.0.0/12', '192.168.1.0/24']}] },
+
+  // Log Source Tests
+  { id: 'ls-src', group: 'logsource', text: 'when the event(s) were detected by one or more of these log sources', params: [{key: 'ls', label: 'Log Sources', type: 'multiselect', options: ['SRV-WIN-001', 'SRV-WIN-002', 'Firewall-MAIN', 'IDS-Sensor-01', 'WebProxy-01']}] },
+  { id: 'ls-type', group: 'logsource', text: 'when the event(s) were detected by one or more of these log source types', params: [{key: 'lst', label: 'Log Source Types', type: 'multiselect', options: ['Microsoft Windows Security Event Log', 'Cisco ASA', 'Palo Alto Networks Firewall', 'Linux OS syslog', 'IBM DB2', 'Apache HTTP Server']}] },
+  { id: 'ls-group', group: 'logsource', text: 'when the event(s) were detected by one or more of these log source groups', params: [{key: 'lsg', label: 'Log Source Groups', type: 'multiselect', options: ['Windows Servers', 'Firewalls', 'Web Servers', 'Databases', 'IDS/IPS']}] },
+
+  // Network Property Tests
+  { id: 'net-src', group: 'network', text: 'when the source network is one of these networks', params: [{key: 'srcnet', label: 'Networks', type: 'multiselect', options: ['DMZ', 'Internal', 'Trusted', 'Untrusted', 'Guest']}] },
+  { id: 'net-dst', group: 'network', text: 'when the destination network is one of these networks', params: [{key: 'dstnet', label: 'Networks', type: 'multiselect', options: ['DMZ', 'Internal', 'Trusted', 'Untrusted', 'Internet']}] },
+
+  // Reference Data Tests
+  { id: 'ref-srcip', group: 'refdata', text: 'when the source IP is contained in this reference set', params: [{key: 'refset', label: 'Reference Set', type: 'text', placeholder: 'Reference Set name...'}] },
+  { id: 'ref-username', group: 'refdata', text: 'when the username is found in this reference set', params: [{key: 'refset2', label: 'Reference Set', type: 'text', placeholder: 'Reference Set name...'}] },
+
+  // Function Tests
+  { id: 'fn-rules', group: 'function', text: 'when an event matches any of the following rules', params: [{key: 'rules', label: 'Rule Names', type: 'multiselect', options: ['BB: Source IP on Watch List', 'BB: High Severity Events', 'BB: Known Malware IPs', 'BB: Privileged Users']}] },
+  { id: 'fn-count', group: 'function', text: 'when this event is seen more than X times in Y minutes', params: [{key: 'count', label: 'Number of Times', type: 'text', placeholder: 'e.g. 5'}, {key: 'mins', label: 'Within (minutes)', type: 'text', placeholder: 'e.g. 10'}] },
+
+  // Date / Time Tests
+  { id: 'dt-time', group: 'datetime', text: 'when the current time is between these hours', params: [{key: 'start', label: 'Start Time (HH:MM)', type: 'text', placeholder: 'e.g. 08:00'}, {key: 'end', label: 'End Time (HH:MM)', type: 'text', placeholder: 'e.g. 18:00'}] },
+  { id: 'dt-day', group: 'datetime', text: 'when the day of week is one of these days', params: [{key: 'days', label: 'Days', type: 'multiselect', options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}] },
+];
+
+let selectedTestId = null;
+let conditionCounter = 0;
+let conditions = []; // {id, testDef, values}
+
+// ============ INIT ============
+function renderTestList(tests) {
+  const list = document.getElementById('testList');
+  list.innerHTML = '';
+  let lastGroup = null;
+
+  const groupNames = {
+    event: 'Event Property Tests',
+    ip: 'IP / Port Tests',
+    logsource: 'Log Source Tests',
+    network: 'Network Property Tests',
+    refdata: 'Reference Data Tests',
+    function: 'Function Tests',
+    datetime: 'Date / Time Tests'
+  };
+
+  tests.forEach(t => {
+    if (t.group !== lastGroup) {
+      const lbl = document.createElement('li');
+      lbl.className = 'test-group-label';
+      lbl.textContent = groupNames[t.group] || t.group;
+      list.appendChild(lbl);
+      lastGroup = t.group;
+    }
+    const li = document.createElement('li');
+    li.className = 'test-item' + (selectedTestId === t.id ? ' selected' : '');
+    li.textContent = t.text;
+    li.dataset.id = t.id;
+    li.onclick = () => selectTest(t.id);
+    li.ondblclick = () => addSelectedTest();
+    list.appendChild(li);
+  });
+}
+
+function filterTests() {
+  const kw = document.getElementById('testFilter').value.toLowerCase();
+  const grp = document.getElementById('testGroup').value;
+  const filtered = ALL_TESTS.filter(t =>
+    (grp === '' || t.group === grp) &&
+    (kw === '' || t.text.toLowerCase().includes(kw))
+  );
+  renderTestList(filtered);
+}
+
+function selectTest(id) {
+  selectedTestId = id;
+  document.querySelectorAll('.test-item').forEach(el => {
+    el.classList.toggle('selected', el.dataset.id === id);
+  });
+}
+
+function addSelectedTest() {
+  if (!selectedTestId) {
+    alert('Please select a test from the list first.');
+    return;
+  }
+  const testDef = ALL_TESTS.find(t => t.id === selectedTestId);
+  if (!testDef) return;
+  const cid = 'cond_' + (++conditionCounter);
+  conditions.push({ id: cid, testDef, values: {} });
+  renderConditionStack();
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+function renderConditionStack() {
+  const stack = document.getElementById('conditionStack');
+  const empty = document.getElementById('emptyMsg');
+
+  if (conditions.length === 0) {
+    stack.innerHTML = '';
+    const li = document.createElement('li');
+    li.className = 'stack-empty';
+    li.id = 'emptyMsg';
+    li.innerHTML = 'No tests have been added to this rule.<br>Select a test from the left panel and click <em>Add »</em> to begin.';
+    stack.appendChild(li);
+    return;
+  }
+
+  stack.innerHTML = '';
+  conditions.forEach((cond, idx) => {
+    const li = document.createElement('li');
+    li.className = 'condition-row';
+    li.id = cond.id;
+    li.onclick = (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+      document.querySelectorAll('.condition-row').forEach(r => r.classList.remove('selected-row'));
+      li.classList.add('selected-row');
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.title = 'Remove this condition';
+    delBtn.textContent = 'x';
+    delBtn.onclick = () => removeCondition(cond.id);
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'condition-text';
+
+    // Build text with hyperlinks
+    const andWhen = document.createElement('span');
+    andWhen.className = 'and-when';
+    andWhen.textContent = idx === 0 ? 'when ' : 'and when ';
+    textSpan.appendChild(andWhen);
+
+    // Split test text by param placeholders
+    buildConditionText(textSpan, cond);
+
+    li.appendChild(delBtn);
+    li.appendChild(textSpan);
+    stack.appendChild(li);
+  });
+}
+
+function buildConditionText(container, cond) {
+  const { testDef, values } = cond;
+  // For simplicity, render text with clickable links for each param
+  let text = testDef.text;
+
+  // Use a simple heuristic: find configurable phrases and wrap them
+  const paramMap = {};
+  testDef.params.forEach(p => { paramMap[p.key] = p; });
+
+  // For each param in order, create a link
+  const parts = text.split(/\b(this \w+ \w+|these \w+ \w+|this \w+|these \w+|this string|more than X times|X times|Y minutes|between these hours)\b/i);
+
+  // Just build from template: text before first link, link, text after
+  // Simpler: put full text, then links for each param
+  const plainText = document.createTextNode(text + ' ');
+  container.appendChild(plainText);
+
+  testDef.params.forEach(p => {
+    const link = document.createElement('a');
+    link.className = 'config-link' + (values[p.key] ? ' configured' : '');
+    link.textContent = values[p.key] ? '[' + values[p.key] + ']' : '[' + p.label + ']';
+    link.title = 'Click to configure: ' + p.label;
+    link.onclick = (e) => {
+      e.stopPropagation();
+      openConfigModal(cond.id, p);
+    };
+    container.appendChild(link);
+    container.appendChild(document.createTextNode(' '));
+  });
+}
+
+function removeCondition(id) {
+  conditions = conditions.filter(c => c.id !== id);
+  renderConditionStack();
+}
+
+// ============ MODAL ============
+let currentCondId = null;
+let currentParam = null;
+let tempSelected = [];
+
+function openConfigModal(condId, param) {
+  currentCondId = condId;
+  currentParam = param;
+  tempSelected = [];
+
+  const cond = conditions.find(c => c.id === condId);
+  if (cond && cond.values[param.key]) {
+    tempSelected = cond.values[param.key].split(', ');
+  }
+
+  document.getElementById('modalTitle').textContent = 'Configure: ' + param.label;
+  const body = document.getElementById('modalBody');
+  body.innerHTML = '';
+
+  if (param.type === 'text') {
+    body.innerHTML = `
+      <div class="modal-field">
+        <label>${param.label}:</label>
+        <input type="text" id="modalTextInput" value="${tempSelected[0] || ''}" placeholder="${param.placeholder || ''}" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn-submit" onclick="submitTextModal()">Submit</button>
+        <button class="btn-dialog-cancel" onclick="closeModal()">Cancel</button>
+      </div>
+    `;
+    setTimeout(() => document.getElementById('modalTextInput').focus(), 50);
+
+  } else if (param.type === 'multiselect') {
+    const availableItems = param.options.filter(o => !tempSelected.includes(o));
+    body.innerHTML = `
+      <div style="margin-bottom:8px;">
+        <label style="font-size:11px">Search: <input type="text" id="modalSearch" style="border:1px solid #999;height:20px;padding:1px 4px;font-size:11px;width:200px" oninput="filterModalList()" /></label>
+      </div>
+      <div class="modal-list-wrapper">
+        <div class="modal-list-pane">
+          <label>Available:</label>
+          <div class="modal-list-box" id="availableList">
+            ${param.options.map(o => `<div class="mlist-item ${tempSelected.includes(o)?'':'avail'}" data-val="${o}" onclick="toggleModalItem(this)">${o}</div>`).join('')}
+          </div>
+        </div>
+        <div class="modal-list-pane">
+          <label>Selected:</label>
+          <div class="modal-list-box" id="selectedList">
+            ${tempSelected.map(o => `<div class="mlist-item sel" data-val="${o}" onclick="removeModalItem(this)">${o}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="modal-manual">
+        <label>Or enter manually:</label>
+        <input type="text" id="manualInput" placeholder="Type value..." />
+        <button class="btn-sm" onclick="addManualItem()">Add</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-submit" onclick="submitMultiModal()">Submit</button>
+        <button class="btn-dialog-cancel" onclick="closeModal()">Cancel</button>
+      </div>
+    `;
+  }
+
+  document.getElementById('configModal').classList.add('open');
+}
+
+function filterModalList() {
+  const kw = document.getElementById('modalSearch').value.toLowerCase();
+  document.querySelectorAll('#availableList .mlist-item').forEach(el => {
+    el.style.display = el.dataset.val.toLowerCase().includes(kw) ? '' : 'none';
+  });
+}
+
+function toggleModalItem(el) {
+  const val = el.dataset.val;
+  if (!tempSelected.includes(val)) {
+    tempSelected.push(val);
+    el.classList.add('sel');
+    const selList = document.getElementById('selectedList');
+    const newEl = document.createElement('div');
+    newEl.className = 'mlist-item sel';
+    newEl.dataset.val = val;
+    newEl.textContent = val;
+    newEl.onclick = () => removeModalItem(newEl);
+    selList.appendChild(newEl);
+  }
+}
+
+function removeModalItem(el) {
+  const val = el.dataset.val;
+  tempSelected = tempSelected.filter(v => v !== val);
+  el.remove();
+  document.querySelectorAll('#availableList .mlist-item').forEach(item => {
+    if (item.dataset.val === val) item.classList.remove('sel');
+  });
+}
+
+function addManualItem() {
+  const inp = document.getElementById('manualInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!tempSelected.includes(val)) {
+    tempSelected.push(val);
+    const selList = document.getElementById('selectedList');
+    const newEl = document.createElement('div');
+    newEl.className = 'mlist-item sel';
+    newEl.dataset.val = val;
+    newEl.textContent = val;
+    newEl.onclick = () => removeModalItem(newEl);
+    selList.appendChild(newEl);
+  }
+  inp.value = '';
+}
+
+function submitTextModal() {
+  const val = document.getElementById('modalTextInput').value.trim();
+  applyValue(val || null);
+  closeModal();
+}
+
+function submitMultiModal() {
+  applyValue(tempSelected.length > 0 ? tempSelected.join(', ') : null);
+  closeModal();
+}
+
+function applyValue(val) {
+  const cond = conditions.find(c => c.id === currentCondId);
+  if (cond) {
+    if (val) cond.values[currentParam.key] = val;
+    else delete cond.values[currentParam.key];
+  }
+  renderConditionStack();
+}
+
+function closeModal() {
+  document.getElementById('configModal').classList.remove('open');
+  currentCondId = null; currentParam = null; tempSelected = [];
+}
+
+// ============ NEXT ============
+function handleNext() {
+  if (conditions.length === 0) {
+    document.getElementById('errorMsg').classList.add('show');
+    document.getElementById('errorMsg').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  alert('✓ Proceeding to Step 4: Rule Response\n\nConditions configured:\n' +
+    conditions.map(c => '• ' + c.testDef.text + (Object.keys(c.values).length ? '\n  Values: ' + Object.values(c.values).join(', ') : ' [unconfigured]')).join('\n'));
+}
+
+// ============ INIT ============
+renderTestList(ALL_TESTS);
+</script>
+</body>
+</html>

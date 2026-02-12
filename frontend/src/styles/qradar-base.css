@@ -1,0 +1,301 @@
+/* ====== IBM QRADAR DESIGN SYSTEM ====== */
+
+/* CSS Variables */
+:root {
+    /* Colors */
+    --qr-header-bg: #003366;
+    --qr-tab-bg: #2B4F7A;
+    --qr-tab-active-bg: #3A6EA5;
+    --qr-tab-inactive-text: #9ABBE0;
+    --qr-panel-header-bg: #C4D8EB;
+    --qr-panel-header-text: #003366;
+    --qr-primary: #0066CC;
+    --qr-primary-hover: #004999;
+    --qr-primary-text: #FFFFFF;
+    --qr-highlight-bg: #D9EAF7;
+    --qr-content-bg: #F0F4F8;
+    --qr-white: #FFFFFF;
+    --qr-gray-light: #F5F5F5;
+    --qr-border: #CCCCCC;
+    --qr-border-dark: #999999;
+    --qr-text-primary: #333333;
+    --qr-text-secondary: #666666;
+    --qr-link: #0066CC;
+    --qr-danger: #CC0000;
+    --qr-footer-bg: #D5DEE8;
+
+    /* Typography */
+    --qr-font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --qr-font-size-sm: 11px;
+    --qr-font-size-base: 12px;
+    --qr-font-size-lg: 14px;
+
+    /* Spacing */
+    --qr-padding-sm: 4px;
+    --qr-padding-md: 8px;
+    --qr-padding-lg: 12px;
+}
+
+/* ====== RESET & BASE ====== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--qr-font);
+    font-size: var(--qr-font-size-base);
+    color: var(--qr-text-primary);
+    background: var(--qr-content-bg);
+    min-width: 1280px;
+}
+
+a {
+    color: var(--qr-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a:hover {
+    color: var(--qr-primary-hover);
+}
+
+/* ====== QRADAR APP WRAPPER ====== */
+.qr-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ====== HEADER ====== */
+.qr-header {
+    background: var(--qr-header-bg);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.qr-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: var(--qr-font-size-lg);
+    font-weight: bold;
+}
+
+.qr-logo-box {
+    background: white;
+    color: var(--qr-header-bg);
+    font-size: 13px;
+    font-weight: bold;
+    padding: 2px 6px;
+    letter-spacing: -1px;
+}
+
+.qr-product-name {
+    flex: 1;
+    font-size: var(--qr-font-size-lg);
+    font-weight: bold;
+    margin-left: 12px;
+}
+
+.qr-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: var(--qr-font-size-base);
+}
+
+.qr-header-right a {
+    color: var(--qr-tab-inactive-text);
+    text-decoration: none;
+}
+
+.qr-help-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--qr-tab-inactive-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: white;
+    cursor: pointer;
+}
+
+/* ====== TAB NAVIGATION ====== */
+.qr-tabs {
+    background: var(--qr-tab-bg);
+    height: 30px;
+    display: flex;
+    align-items: stretch;
+    padding: 0 8px;
+    flex-shrink: 0;
+}
+
+.qr-tab {
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    color: var(--qr-tab-inactive-text);
+    font-size: var(--qr-font-size-base);
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+.qr-tab:hover {
+    color: white;
+}
+
+.qr-tab.active {
+    color: white;
+    border-bottom-color: white;
+    background: var(--qr-tab-active-bg);
+}
+
+/* ====== WIZARD STEPS ====== */
+.qr-wizard-steps {
+    background: #E8EEF4;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--qr-border);
+    font-size: var(--qr-font-size-sm);
+    flex-shrink: 0;
+}
+
+.qr-step {
+    color: var(--qr-text-secondary);
+}
+
+.qr-step.done {
+    color: var(--qr-primary);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.qr-step.current {
+    color: var(--qr-header-bg);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.qr-step-sep {
+    color: #999;
+    margin: 0 6px;
+}
+
+/* ====== MAIN CONTENT ====== */
+.qr-wizard-content {
+    padding: 10px 14px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ====== RULE NAME BAR ====== */
+.qr-rule-name-bar {
+    background: #EBF0F6;
+    border: 1px solid var(--qr-border);
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.qr-rule-name-bar label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--qr-font-size-base);
+    font-weight: bold;
+}
+
+.qr-rule-name-bar input {
+    border: 1px solid var(--qr-border-dark);
+    height: 22px;
+    padding: 2px 6px;
+    font-family: var(--qr-font);
+    font-size: var(--qr-font-size-base);
+    background: white;
+}
+
+.qr-rule-name-input {
+    width: 320px;
+}
+
+.qr-notes-input {
+    width: 260px;
+}
+
+.qr-rule-name-bar .notes-label {
+    font-weight: normal;
+}
+
+/* ====== WIZARD FOOTER ====== */
+.qr-wizard-footer {
+    background: var(--qr-footer-bg);
+    border-top: 2px solid #AAAAAA;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-back,
+.btn-cancel {
+    background: #E8E8E8;
+    border: 1px solid var(--qr-border-dark);
+    padding: 5px 18px;
+    font-family: var(--qr-font);
+    font-size: var(--qr-font-size-base);
+    color: var(--qr-text-primary);
+    cursor: pointer;
+}
+
+.btn-back:hover,
+.btn-cancel:hover {
+    background: #D0D8E0;
+}
+
+.btn-next {
+    background: var(--qr-primary);
+    border: none;
+    padding: 5px 22px;
+    font-family: var(--qr-font);
+    font-size: var(--qr-font-size-base);
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-next:hover {
+    background: var(--qr-primary-hover);
+}
+
+/* ====== ERROR MESSAGE ====== */
+.error-msg {
+    background: #FFEEEE;
+    border: 1px solid var(--qr-danger);
+    color: var(--qr-danger);
+    padding: 6px 10px;
+    font-size: var(--qr-font-size-base);
+    margin-bottom: 8px;
+    display: none;
+}
+
+.error-msg.show {
+    display: block;
+}
