@@ -1,4 +1,4 @@
-/* ====== IBM QRADAR DESIGN SYSTEM ====== */
+/* ====== CLONE SIEM DESIGN SYSTEM ====== */
 
 /* CSS Variables */
 :root {
@@ -61,7 +61,7 @@ a:hover {
     color: var(--qr-primary-hover);
 }
 
-/* ====== QRADAR APP WRAPPER ====== */
+/* ====== CLONE SIEM APP WRAPPER ====== */
 .qr-app {
     display: flex;
     flex-direction: column;

@@ -4,9 +4,9 @@ const QRadarHeader: React.FC = () => {
     return (
         <header className="qr-header">
             <div className="qr-logo">
-                <span className="qr-logo-box">IBM</span>
+                <span className="qr-logo-box">CS</span>
             </div>
-            <span className="qr-product-name">IBM Security QRadar SIEM</span>
+            <span className="qr-product-name">CLONE SIEM</span>
             <div className="qr-header-right">
                 <a href="#">admin ▾</a>
                 <div className="qr-help-btn">?</div>

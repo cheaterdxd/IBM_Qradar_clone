@@ -1,4 +1,4 @@
-// QRadar Test Definitions
+// CLONE SIEM Test Definitions
 export interface QRadarTestParam {
     key: string;
     label: string;
