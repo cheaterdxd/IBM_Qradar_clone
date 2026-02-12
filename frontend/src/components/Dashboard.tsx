@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
             >
                 <div className="mb-4">
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: 'var(--spacing-xs)' }}>
-                        QRadar Editor
+                        CLONE SIEM Editor
                     </h2>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                         Rule Test Stack

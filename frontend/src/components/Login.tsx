@@ -27,7 +27,7 @@ const Login: React.FC = () => {
         <div className="flex items-center justify-center" style={{ minHeight: '100vh' }}>
             <div className="glass-container fade-in" style={{ maxWidth: '400px', width: '100%' }}>
                 <h1 className="text-center mb-4" style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-                    QRadar Rule Editor
+                    CLONE SIEM Rule Editor
                 </h1>
                 <p className="text-center mb-4" style={{ color: 'var(--text-secondary)' }}>
                     Sign in to continue
