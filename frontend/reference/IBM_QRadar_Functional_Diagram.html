@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>IBM QRadar — Sơ Đồ Chức Năng GUI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root {
+  --ibm-blue:      #0f62fe;
+  --ibm-blue-dark: #0043ce;
+  --ibm-blue-lite: #d0e2ff;
+  --ibm-cyan:      #00b0ff;
+  --ibm-teal:      #009d9a;
+  --ibm-green:     #198038;
+  --ibm-yellow:    #f1c21b;
+  --ibm-orange:    #ff832b;
+  --ibm-red:       #da1e28;
+  --ibm-purple:    #8a3ffc;
+  --ibm-gray-10:   #f4f4f4;
+  --ibm-gray-20:   #e0e0e0;
+  --ibm-gray-30:   #c6c6c6;
+  --ibm-gray-50:   #8d8d8d;
+  --ibm-gray-70:   #525252;
+  --ibm-gray-80:   #393939;
+  --ibm-gray-90:   #262626;
+  --ibm-gray-100:  #161616;
+  --bg:            #0a0e1a;
+  --bg2:           #111827;
+  --bg3:           #1a2235;
+  --border:        #2d3a52;
+  --text:          #cdd6f4;
+  --text-dim:      #6c7a96;
+  --accent:        #00d4ff;
+  --glow:          rgba(0,212,255,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  overflow-x: hidden;
+}
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ---- HEADER ---- */
+.diagram-header {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0d1b3e 50%, #0a1628 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 40px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.diagram-header::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 20px,
+    rgba(15,98,254,0.03) 20px, rgba(15,98,254,0.03) 21px
+  );
+  pointer-events: none;
+}
+.header-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ibm-cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+.header-title { font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.header-title span { color: var(--accent); }
+.header-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; font-weight: 300; }
+.header-meta { display: flex; gap: 24px; margin-top: 16px; }
+.meta-chip {
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+  padding: 3px 10px; border-radius: 2px; color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* ---- LEGEND ---- */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  padding: 14px 40px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ---- MAIN CANVAS ---- */
+.canvas { padding: 32px 40px; }
+
+/* ---- SECTION TITLES ---- */
+.sec-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ---- ARCHITECTURE OVERVIEW ---- */
+.arch-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border);
+}
+.arch-cell {
+  padding: 10px 12px;
+  background: var(--bg2);
+  font-size: 11px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.arch-cell.header-cell {
+  background: rgba(15,98,254,0.15);
+  font-weight: 700; font-size: 11px;
+  color: #fff; letter-spacing: 0.5px;
+}
+.arch-cell.layer-label {
+  background: var(--bg3); font-weight: 600;
+  color: var(--accent); font-size: 10px;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: flex; align-items: center;
+  border-right: 2px solid var(--accent);
+}
+.arch-cell.layer-label small { display: block; color: var(--text-dim); font-size: 9px; margin-top: 2px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+/* ---- TAB MAP ---- */
+.tab-map {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+.tab-btn {
+  padding: 8px 16px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'IBM Plex Sans', sans-serif;
+  letter-spacing: 0.3px; flex: 1; text-align: center;
+  position: relative;
+}
+.tab-btn.active {
+  border-color: var(--accent);
+  background: rgba(0,212,255,0.1);
+  color: var(--accent);
+}
+.tab-btn:not(.active) { background: var(--bg2); color: var(--text-dim); }
+.tab-btn:hover:not(.active) { background: var(--bg3); color: var(--text); }
+.tab-badge {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--ibm-red); color: white;
+  font-size: 8px; padding: 1px 4px; border-radius: 8px;
+  font-weight: 700;
+}
+
+/* ---- PANEL SYSTEM ---- */
+.tab-panels { position: relative; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---- SCREEN BLOCK ---- */
+.screen-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.screen-titlebar {
+  background: linear-gradient(90deg, var(--bg3), var(--bg2));
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 600; color: var(--text-dim);
+}
+.screen-titlebar .screen-icon { font-size: 14px; }
+.screen-titlebar .screen-name { color: #fff; font-size: 12px; }
+.screen-titlebar .screen-path { color: var(--text-dim); font-size: 10px; font-family: 'IBM Plex Mono', monospace; }
+.screen-body { padding: 16px; }
+
+/* ---- BUTTON GRID ---- */
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.func-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px 12px;
+  cursor: default;
+  transition: all 0.1s;
+  position: relative;
+}
+.func-btn:hover { border-color: var(--accent); background: rgba(0,212,255,0.05); }
+.func-btn-top { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.btn-label {
+  font-size: 11px; font-weight: 600; color: #e2e8f0;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.btn-type {
+  font-size: 9px; padding: 1px 6px;
+  border-radius: 1px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.btn-type.action   { background: rgba(15,98,254,0.2);  color: #74b9ff; border: 1px solid rgba(15,98,254,0.3); }
+.btn-type.nav      { background: rgba(0,212,255,0.1);  color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+.btn-type.filter   { background: rgba(0,157,154,0.2);  color: #55efc4; border: 1px solid rgba(0,157,154,0.3); }
+.btn-type.modal    { background: rgba(138,63,252,0.2); color: #a29bfe; border: 1px solid rgba(138,63,252,0.3); }
+.btn-type.danger   { background: rgba(218,30,40,0.15); color: #ff7675; border: 1px solid rgba(218,30,40,0.3); }
+.btn-type.menu     { background: rgba(241,194,27,0.15);color: #fdcb6e; border: 1px solid rgba(241,194,27,0.3); }
+.btn-type.toggle   { background: rgba(25,128,56,0.2);  color: #00b894; border: 1px solid rgba(25,128,56,0.3); }
+.btn-type.wizard   { background: rgba(255,131,43,0.15);color: #e17055; border: 1px solid rgba(255,131,43,0.3); }
+.btn-desc { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
+.btn-shortcut {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 9px; font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-dim); background: var(--bg);
+  padding: 1px 5px; border: 1px solid var(--border); border-radius: 2px;
+}
+
+/* ---- SUB SECTION ---- */
+.sub-sec { margin-bottom: 16px; }
+.sub-sec-title {
+  font-size: 10px; font-weight: 700; color: var(--text-dim);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px; padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ---- FLOW DIAGRAM ---- */
+.flow-diagram {
+  display: flex; align-items: stretch; gap: 0;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.flow-node {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  min-width: 150px; flex: 1;
+  padding: 12px 14px;
+  position: relative;
+}
+.flow-node.highlighted { border-color: var(--accent); background: rgba(0,212,255,0.07); }
+.flow-node-title { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.flow-node-sub { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+.flow-arrow {
+  display: flex; align-items: center; padding: 0 4px;
+  color: var(--accent); font-size: 18px; flex-shrink: 0;
+}
+
+/* ---- DROPDOWN SPEC ---- */
+.dropdown-spec {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 2px; overflow: hidden; margin-bottom: 12px;
+}
+.dropdown-spec-title {
+  background: rgba(15,98,254,0.1); border-bottom: 1px solid var(--border);
+  padding: 7px 12px; font-size: 11px; font-weight: 600; color: var(--accent);
+  display: flex; align-items: center; gap: 8px;
+}
+.dropdown-spec-title::before { content: '▾'; font-size: 12px; }
+.dropdown-items { padding: 4px 0; }
+.dd-item {
+  padding: 5px 16px; font-size: 11px; color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(45,58,82,0.5);
+}
+.dd-item:last-child { border-bottom: none; }
+.dd-item-label { flex: 1; }
+.dd-item-desc { font-size: 10px; color: var(--text-dim); text-align: right; max-width: 200px; }
+.dd-separator { height: 1px; background: var(--border); margin: 4px 0; }
+.dd-group-label {
+  padding: 4px 12px; font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+/* ---- TABLE SPEC ---- */
+.spec-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; }
+.spec-table th {
+  background: rgba(15,98,254,0.15); color: #fff; font-weight: 600;
+  padding: 7px 12px; text-align: left; border-bottom: 1px solid var(--border);
+  letter-spacing: 0.5px; font-size: 10px;
+}
+.spec-table td {
+  padding: 6px 12px; border-bottom: 1px solid rgba(45,58,82,0.5);
+  vertical-align: top; line-height: 1.45; color: var(--text);
+}
+.spec-table tr:hover td { background: rgba(0,212,255,0.03); }
+.spec-table td:first-child { font-family: 'IBM Plex Mono', monospace; color: #e2e8f0; font-weight: 600; font-size: 11px; white-space: nowrap; }
+.spec-table td code {
+  background: var(--bg); padding: 1px 5px; border-radius: 2px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ibm-cyan);
+}
+
+/* ---- WIZARD STEP DIAGRAM ---- */
+.wizard-steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;
+}
+.wizard-step {
+  flex: 1; min-width: 140px;
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 12px 14px; position: relative;
+}
+.wizard-step.current-step {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--accent);
+}
+.wizard-step-num { font-size: 20px; font-weight: 700; color: var(--border); margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+.wizard-step.current-step .wizard-step-num { color: var(--accent); }
+.wizard-step-name { font-size: 11px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+.wizard-step-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+.wizard-arrow { font-size: 20px; color: var(--border); flex-shrink: 0; padding: 0 4px; }
+.wizard-step.current-step + .wizard-arrow { color: var(--accent); }
+
+/* ---- RULE EDITOR SPECIAL ---- */
+.rule-editor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.rule-panel {
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  border-radius: 2px; overflow: hidden;
+}
+.rule-panel-hdr {
+  background: rgba(15,98,254,0.15);
+  padding: 7px 12px; font-size: 11px; font-weight: 700; color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.rule-panel-body { padding: 10px; }
+.rule-test-item {
+  padding: 5px 8px; font-size: 10px; color: var(--text);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+.rule-test-item:hover { border-left-color: var(--accent); background: rgba(0,212,255,0.05); color: var(--accent); }
+.rule-test-item.grp-label { color: var(--text-dim); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 8px; cursor: default; border-left: none; }
+.condition-entry {
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 6px 6px; border-bottom: 1px solid rgba(45,58,82,0.4);
+  font-size: 10px;
+}
+.cond-x { color: var(--ibm-red); cursor: pointer; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.cond-text { line-height: 1.45; }
+.cond-link { color: var(--ibm-cyan); text-decoration: underline; cursor: pointer; }
+
+/* ---- TOOLTIP ---- */
+.tip {
+  display: inline-block;
+  position: relative;
+  cursor: help;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: #1a2740; border: 1px solid var(--border);
+  padding: 5px 10px; font-size: 10px; color: var(--text);
+  white-space: nowrap; border-radius: 2px; z-index: 100;
+  opacity: 0; pointer-events: none; transition: opacity 0.15s;
+  font-family: 'IBM Plex Sans', sans-serif; font-weight: 400;
+}
+.tip:hover::after { opacity: 1; }
+
+/* ---- ADMIN GRID ---- */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.admin-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 2px; padding: 12px;
+}
+.admin-card-icon { font-size: 20px; margin-bottom: 6px; }
+.admin-card-title { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.admin-card-items { font-size: 10px; color: var(--text-dim); line-height: 1.7; }
+.admin-card-items li { list-style: none; padding-left: 10px; position: relative; }
+.admin-card-items li::before { content: '·'; position: absolute; left: 0; color: var(--accent); }
+
+/* ---- INFO BOX ---- */
+.info-box {
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px; margin-bottom: 14px;
+  font-size: 11px; color: var(--text); line-height: 1.55;
+  border-radius: 0 2px 2px 0;
+}
+.info-box strong { color: var(--accent); }
+
+/* ---- KEYBOARD SHORTCUT ---- */
+.kbd {
+  display: inline-block; background: var(--bg);
+  border: 1px solid var(--border); border-bottom: 2px solid var(--border);
+  padding: 1px 5px; border-radius: 3px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+  color: var(--text-dim); margin: 0 2px;
+}
+
+/* ---- OVERVIEW MAP ---- */
+.overview-map {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 3px;
+  margin-bottom: 32px;
+}
+.ov-cell {
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+.ov-cell.span2 { grid-column: span 2; }
+.ov-cell.span4 { grid-column: span 4; }
+.ov-cell.highlight { border-color: var(--ibm-blue); background: rgba(15,98,254,0.08); }
+.ov-cell-tag { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.ov-cell-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.ov-cell-desc { font-size: 10px; color: var(--text-dim); line-height: 1.5; }
+.ov-cell-btns { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.ov-btn {
+  font-size: 9px; padding: 2px 7px;
+  border-radius: 1px; cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.ov-btn.blue   { background: rgba(15,98,254,0.15); border: 1px solid rgba(15,98,254,0.4); color: #74b9ff; }
+.ov-btn.cyan   { background: rgba(0,212,255,0.1);  border: 1px solid rgba(0,212,255,0.3);  color: var(--accent); }
+.ov-btn.green  { background: rgba(25,128,56,0.15); border: 1px solid rgba(25,128,56,0.4); color: #00b894; }
+.ov-btn.red    { background: rgba(218,30,40,0.12); border: 1px solid rgba(218,30,40,0.3); color: #ff7675; }
+.ov-btn.yellow { background: rgba(241,194,27,0.1); border: 1px solid rgba(241,194,27,0.3); color: #fdcb6e; }
+.ov-btn.purple { background: rgba(138,63,252,0.1); border: 1px solid rgba(138,63,252,0.3); color: #a29bfe; }
+.ov-btn.gray   { background: rgba(140,140,160,0.1);border: 1px solid rgba(140,140,160,0.3);color: var(--text-dim); }
+
+/* ---- FOOTER ---- */
+.diagram-footer {
+  border-top: 1px solid var(--border);
+  padding: 16px 40px;
+  background: var(--bg2);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10px; color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="diagram-header">
+  <div class="header-tag">// sơ đồ chức năng · functional diagram</div>
+  <div class="header-title">IBM QRadar SIEM — <span>Bản Đồ Toàn Bộ GUI</span></div>
+  <div class="header-sub">Mô tả chức năng đầy đủ các tab, panel, nút bấm và luồng thao tác · Phiên bản QRadar 7.3 – 7.5</div>
+  <div class="header-meta">
+    <span class="meta-chip">7 MAIN TABS</span>
+    <span class="meta-chip">100+ BUTTONS</span>
+    <span class="meta-chip">5-STEP RULE WIZARD</span>
+    <span class="meta-chip">AQL SEARCH ENGINE</span>
+    <span class="meta-chip">REAL-TIME STREAMING</span>
+  </div>
+</div>
+
+<!-- ===== LEGEND ===== -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#74b9ff"></div> Nút hành động (Action)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00cfe8"></div> Nút điều hướng (Navigation)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#55efc4"></div> Bộ lọc / Tìm kiếm (Filter)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a29bfe"></div> Mở popup / Dialog</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff7675"></div> Xóa / Nguy hiểm (Danger)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fdcb6e"></div> Menu dropdown</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00b894"></div> Toggle / Bật-tắt</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e17055"></div> Bước wizard</div>
+</div>
+
+<div class="canvas">
+
+<!-- ===== SECTION 1: ARCHITECTURE OVERVIEW ===== -->
+<div class="sec-title">01 · Kiến Trúc Tổng Quan — 3 Tầng Hệ Thống</div>
+
+<div class="flow-diagram" style="margin-bottom:12px">
+  <div class="flow-node">
+    <div class="flow-node-title">📡 DATA COLLECTION LAYER</div>
+    <div class="flow-node-sub">Log Sources, Flow Collectors, DSM Parser thu thập events & flows thô từ mạng</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">
+    <div class="flow-node-title">⚙️ DATA PROCESSING LAYER</div>
+    <div class="flow-node-sub">Custom Rules Engine (CRE) chạy trên Event Processor, tương quan hóa và tạo Offenses</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node highlighted">
+    <div class="flow-node-title">🖥️ PRESENTATION LAYER (GUI)</div>
+    <div class="flow-node-sub">Console — Dashboard, Offenses, Log Activity, Network Activity, Assets, Reports, Admin</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 2: OVERVIEW MAP ===== -->
+<div class="sec-title">02 · Bản Đồ Màn Hình — Tổng Quan Tất Cả Tabs</div>
+
+<div class="overview-map">
+
+  <div class="ov-cell">
+    <div class="ov-cell-tag">Tab 1</div>
+    <div class="ov-cell-name">📊 Dashboard</div>
+    <div class="ov-cell-desc">Trang chủ. Hiển thị widgets tóm tắt toàn hệ thống theo thời gian thực.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Add Item</span>
+      <span class="ov-btn cyan">New Dashboard</span>
+      <span class="ov-btn gray">Rename</span>
+      <span class="ov-btn red">Delete Dashboard</span>
+      <span class="ov-btn green">Share</span>
+    </div>
+  </div>
+
+  <div class="ov-cell highlight">
+    <div class="ov-cell-tag">Tab 2 · Primary</div>
+    <div class="ov-cell-name">🚨 Offenses</div>
+    <div class="ov-cell-desc">Quản lý sự cố bảo mật. Xem, xử lý, gán, đóng các offense được tạo từ rules.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Assign</span>
+      <span class="ov-btn yellow">Close</span>
+      <span class="ov-btn red">Hide</span>
+      <span class="ov-btn cyan">Follow Up</span>
+      <span class="ov-btn green">Add Note</span>
+      <span class="ov-btn purple">Rules</span>
+    </div>
+  </div>
+
+  <div class="ov-cell">
+    <div class="ov-cell-tag">Tab 3</div>
+    <div class="ov-cell-name">📋 Log Activity</div>
+    <div class="ov-cell-desc">Tìm kiếm, phân tích sự kiện log (events) theo AQL. Chế độ streaming thời gian thực.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Search</span>
+      <span class="ov-btn cyan">Add Filter</span>
+      <span class="ov-btn green">Save Criteria</span>
+      <span class="ov-btn gray">Pause ⏸</span>
+      <span class="ov-btn yellow">Export</span>
+    </div>
+  </div>
+
+  <div class="ov-cell">
+    <div class="ov-cell-tag">Tab 4</div>
+    <div class="ov-cell-name">🌐 Network Activity</div>
+    <div class="ov-cell-desc">Phân tích network flows (luồng giao tiếp giữa 2 host). Xem thông tin phiên mạng.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Search</span>
+      <span class="ov-btn cyan">Add Filter</span>
+      <span class="ov-btn gray">Pause ⏸</span>
+      <span class="ov-btn yellow">Export</span>
+      <span class="ov-btn green">False Positive</span>
+    </div>
+  </div>
+
+  <div class="ov-cell">
+    <div class="ov-cell-tag">Tab 5</div>
+    <div class="ov-cell-name">🏢 Assets</div>
+    <div class="ov-cell-desc">Quản lý tài sản mạng — máy chủ, thiết bị, profile tài sản và thông tin lỗ hổng.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Search Assets</span>
+      <span class="ov-btn cyan">View Profile</span>
+      <span class="ov-btn red">Delete Asset</span>
+      <span class="ov-btn yellow">Import</span>
+      <span class="ov-btn green">Vuln. Research</span>
+    </div>
+  </div>
+
+  <div class="ov-cell">
+    <div class="ov-cell-tag">Tab 6</div>
+    <div class="ov-cell-name">📈 Reports</div>
+    <div class="ov-cell-desc">Tạo và lên lịch báo cáo bảo mật. Hỗ trợ nhiều loại biểu đồ và template compliance.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">Create Report</span>
+      <span class="ov-btn cyan">Generate Now</span>
+      <span class="ov-btn yellow">Schedule</span>
+      <span class="ov-btn gray">Duplicate</span>
+      <span class="ov-btn red">Delete</span>
+    </div>
+  </div>
+
+  <div class="ov-cell span2">
+    <div class="ov-cell-tag">Tab 7 · Admin Only</div>
+    <div class="ov-cell-name">⚙️ Admin</div>
+    <div class="ov-cell-desc">Cấu hình hệ thống. Quản lý user, license, log sources, network hierarchy, DSM, backup, và toàn bộ cơ sở hạ tầng QRadar. Chỉ hiển thị với quyền Admin.</div>
+    <div class="ov-cell-btns">
+      <span class="ov-btn blue">System Config</span>
+      <span class="ov-btn blue">User Management</span>
+      <span class="ov-btn cyan">Log Sources</span>
+      <span class="ov-btn cyan">Network Hierarchy</span>
+      <span class="ov-btn yellow">DSM Editor</span>
+      <span class="ov-btn green">License Management</span>
+      <span class="ov-btn purple">Deploy Changes</span>
+      <span class="ov-btn red">SIM Reset</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== SECTION 3: TAB NAVIGATOR ===== -->
+<div class="sec-title">03 · Chi Tiết Từng Tab — Tất Cả Nút Bấm & Chức Năng</div>
+
+<!-- TAB BUTTONS -->
+<div class="tab-map">
+  <div class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</div>
+  <div class="tab-btn" onclick="showTab('offenses')">🚨 Offenses</div>
+  <div class="tab-btn" onclick="showTab('logactivity')">📋 Log Activity</div>
+  <div class="tab-btn" onclick="showTab('network')">🌐 Network Activity</div>
+  <div class="tab-btn" onclick="showTab('assets')">🏢 Assets</div>
+  <div class="tab-btn" onclick="showTab('reports')">📈 Reports</div>
+  <div class="tab-btn" onclick="showTab('admin')">⚙️ Admin</div>
+</div>
+
+<div class="tab-panels">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="tab-panel active" id="tab-dashboard">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">📊</span>
+        <span class="screen-name">Dashboard Tab</span>
+        <span class="screen-path">/ Dashboard → [Active Dashboard Name]</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Dashboard là trang mặc định khi đăng nhập. Hiển thị các <strong>Dashboard Items</strong> (widgets) tóm tắt toàn hệ thống. Mỗi user có dashboard riêng, không ảnh hưởng nhau.
+        </div>
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar Chính</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Add Item ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Mở dropdown để thêm widget mới vào dashboard: Offense Summary, Event Search, Flow Search, System Summary, Risk Analysis, Threat Intel...</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[New Dashboard]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tạo dashboard mới với tên tùy chọn. Hỗ trợ nhiều dashboard song song.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Rename Dashboard]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Đổi tên dashboard hiện tại qua inline popup.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Delete Dashboard]</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Xóa dashboard đang xem. Yêu cầu xác nhận.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Share ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Chia sẻ dashboard với user khác (QRadar 7.4+).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Timer ▸/⏸]</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Tạm dừng hoặc tiếp tục auto-refresh của toàn dashboard. Timer đỏ = đang tạm dừng.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Dashboard Item (Mỗi Widget) — Controls</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Title Bar] Click</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Click vào thanh tiêu đề widget để tạm dừng/tiếp tục auto-refresh của widget đó. Timer nhấp nháy đỏ khi đang pause.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[▸/⏸] Pause Icon</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Pause/resume cập nhật dữ liệu của widget riêng lẻ.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[↗ Maximize]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Mở rộng widget chiếm toàn trang để xem chi tiết.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[✕ Close Widget]</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Xóa widget khỏi dashboard (không xóa dữ liệu).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[⚙ Configure]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Mở dialog cấu hình widget: thay đổi loại chart, khoảng thời gian, saved search nguồn dữ liệu.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Drag Handle] ⠿</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Kéo thả để sắp xếp lại vị trí widget trên dashboard.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Dropdown "Add Item" — Danh sách loại Widget</div>
+          <div class="dropdown-spec">
+            <div class="dropdown-spec-title">Add Item Menu</div>
+            <div class="dropdown-items">
+              <div class="dd-group-label">Offenses</div>
+              <div class="dd-item"><span class="dd-item-label">Offense Summary</span><span class="dd-item-desc">Tóm tắt số offense theo trạng thái</span></div>
+              <div class="dd-item"><span class="dd-item-label">Most Recent Offenses</span><span class="dd-item-desc">Danh sách 5-10 offense mới nhất</span></div>
+              <div class="dd-item"><span class="dd-item-label">Most Severe Offenses</span><span class="dd-item-desc">Top offense theo độ nghiêm trọng</span></div>
+              <div class="dd-separator"></div>
+              <div class="dd-group-label">Log Activity</div>
+              <div class="dd-item"><span class="dd-item-label">Event Searches</span><span class="dd-item-desc">Widget từ saved AQL search</span></div>
+              <div class="dd-item"><span class="dd-item-label">Log Activity Overview</span><span class="dd-item-desc">Biểu đồ tổng lượng events/phút</span></div>
+              <div class="dd-separator"></div>
+              <div class="dd-group-label">Network Activity</div>
+              <div class="dd-item"><span class="dd-item-label">Flow Searches</span><span class="dd-item-desc">Widget từ saved flow search</span></div>
+              <div class="dd-item"><span class="dd-item-label">Top Talkers</span><span class="dd-item-desc">IP giao tiếp nhiều nhất</span></div>
+              <div class="dd-separator"></div>
+              <div class="dd-group-label">System</div>
+              <div class="dd-item"><span class="dd-item-label">System Summary</span><span class="dd-item-desc">Trạng thái hệ thống QRadar</span></div>
+              <div class="dd-item"><span class="dd-item-label">Risk Summary</span><span class="dd-item-desc">Chỉ số rủi ro tổng thể (nếu có license)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== OFFENSES ===== -->
+  <div class="tab-panel" id="tab-offenses">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">🚨</span>
+        <span class="screen-name">Offenses Tab</span>
+        <span class="screen-path">/ Offenses → All Offenses (hoặc My Offenses / By Source IP / By Network)</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Offenses là <strong>sự cố bảo mật</strong> được tạo tự động khi correlation rules bị kích hoạt. Mỗi offense có: Magnitude (1–10), Severity, Credibility, Relevance, nguồn IP, username... Tab này là trung tâm điều tra của SOC analyst.
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Sub-Navigation (Left sidebar / Dropdown)</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">My Offenses</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Chỉ hiển thị offense được gán cho user đang đăng nhập.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">All Offenses</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Hiển thị tất cả offense đang active trong hệ thống.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">By Source IP</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Gom nhóm offense theo địa chỉ IP nguồn.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">By Destination IP</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Gom nhóm offense theo địa chỉ IP đích.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">By Network</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Gom nhóm offense theo network segment.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">By Category</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Gom nhóm offense theo high/low level category.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar Chính — Offenses List</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Actions ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Dropdown với các tác vụ batch cho offense đã chọn: Close, Protect, Follow Up, Hide, Assign...</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Rules ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Mở menu quản lý rules: New Event Rule, New Flow Rule, New Common Rule, New Offense Rule, View Rules...</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Search ▾]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Tìm kiếm offense theo nhiều tiêu chí: Saved Searches, New Search, Edit Search...</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Refresh ↺]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tải lại danh sách offense. Offenses tab KHÔNG tự động refresh — phải bấm thủ công.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Actions Menu — Các tác vụ trên Offense đã chọn</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Assign</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Gán offense cho một user cụ thể để xử lý. Mở popup chọn user từ danh sách.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Close Offense</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Đóng offense với lý do: False Positive, Non-Issue, Solved, Policy Violation... Cần điền comment bắt buộc.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Protect Offense</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Đánh dấu offense được bảo vệ, không bị xóa tự động bởi retention policy. Hữu ích cho forensic.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Follow Up</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Đánh dấu cần theo dõi tiếp. Hiển thị icon cờ màu vàng trên offense row.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Hide Offense</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Ẩn offense khỏi danh sách mặc định (vẫn còn trong DB). Hiển thị lại qua filter.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Manage Offense</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Mở trang chi tiết của offense đã chọn.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Rules Menu — Quản lý Correlation Rules</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">New Event Rule</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Mở Rule Wizard 5 bước để tạo quy tắc tương quan cho sự kiện log.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">New Flow Rule</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Tạo rule cho network flows (luồng giao tiếp mạng).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">New Common Rule</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Tạo rule kiểm tra cả events lẫn flows đồng thời.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">New Offense Rule</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Tạo rule trigger khi offense có thay đổi (thêm event, thay đổi magnitude...).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">New BB (Building Block)</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Tạo khối logic tái sử dụng (không tạo offense). Dùng làm điều kiện phụ cho rules khác.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">View Rules</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Xem toàn bộ danh sách rules hiện có. Hỗ trợ filter theo group, loại, trạng thái.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Trang Chi Tiết Offense — Offense Detail Page</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Events] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Xem tất cả events đã trigger offense này. Click event để xem payload đầy đủ.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Flows] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Xem network flows liên quan đến offense.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Source IPs] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Danh sách IP nguồn liên quan. Click để xem asset profile.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Log Sources] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Nguồn log đã tạo ra events trong offense này.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Rules] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Danh sách correlation rules đã kích hoạt offense này.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Annotations] Tab</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Ghi chú, timeline, lịch sử thay đổi của offense.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Add Comment]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Thêm ghi chú điều tra vào offense. Lưu timestamp và tên analyst.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Navigate to X-Force]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Tra cứu IP/URL trong IBM X-Force Exchange threat intelligence.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOG ACTIVITY ===== -->
+  <div class="tab-panel" id="tab-logactivity">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">📋</span>
+        <span class="screen-name">Log Activity Tab</span>
+        <span class="screen-path">/ Log Activity → [Search Results | Real-time Streaming]</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Log Activity cho phép tìm kiếm và phân tích <strong>sự kiện (events)</strong> được thu thập từ log sources. Có 2 chế độ: <strong>Real Time (streaming)</strong> – hiển thị events trực tiếp, và <strong>Tìm kiếm theo khoảng thời gian</strong> từ Ariel database. Auto-refresh mỗi 60 giây.
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar Tìm Kiếm</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Search ▾]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Dropdown: New Search, Edit Search, Manage Search Results, Saved Searches (Load), Cancel Current Search.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Add Filter]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Thêm filter nhanh vào kết quả hiện tại: chọn Parameter, Operator (=, ≠, >, <, contains...), Value.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Quick Filter]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Ô nhập AQL-like syntax: <code>sourceip=1.2.3.4</code>, <code>username='admin'</code> để lọc nhanh.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[⏸ Pause]</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Tạm dừng streaming/auto-refresh. Nút chuyển thành [▸ Resume]. Hiển thị khi ở chế độ Real Time hoặc Last Minute.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Save Criteria]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Lưu bộ điều kiện tìm kiếm hiện tại với tên tùy chọn để tái sử dụng sau.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Save Results]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Lưu kết quả search hiện tại (snapshot) vào Manage Search Results.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">View Mode Selector (Chế độ hiển thị)</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Real Time (streaming)</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Hiển thị events theo thời gian thực. Không lưu trữ, stream trực tiếp từ Event Processor. Không phân trang.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Last Minute (auto refresh)</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Hiển thị events 1 phút gần nhất, tự động refresh mỗi 60 giây. Có nút Pause.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Last 5 Minutes</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Query từ database với khoảng thời gian cố định 5 phút trước.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Last Hour / Today / Custom</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Chọn khoảng thời gian tùy ý. Custom: nhập Start Time và End Time cụ thể. Dùng console time.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Advanced Search — AQL Query Editor</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Advanced Search]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Mở AQL editor full. Cho phép viết query phức tạp: <code>SELECT sourceip, username FROM events WHERE category=5004 LAST 24 HOURS</code></div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Run Query]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Thực thi AQL query hiện tại. Hiển thị spinner trong khi chạy.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Cancel Search ✕]</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Hủy query đang chạy. Thoát trả về kết quả đã có.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Column & Export Controls</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Export ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Xuất dữ liệu: Export to CSV, Export to XML. Download file về máy analyst.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Columns ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Thêm/bỏ cột hiển thị. Custom column layout và lưu layout.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Group By ▾]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Gom nhóm kết quả theo field: Source IP, Category, Username, Log Source... Đếm số event mỗi nhóm.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[PCAP ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Hiển thị cột PCAP data / Download file PCAP cho forensic analysis (yêu cầu Incident Forensics license).</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Right-Click Context Menu (trên event row)</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">View Event Details</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Mở popup hiển thị toàn bộ thông tin event: payload đầy đủ, tất cả fields đã parse, QID.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">View Associated Offense</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Nhảy sang Offenses tab để xem offense chứa event này.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Tune False Positive</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Mở wizard để loại bỏ false positive: tạo exception rule cho event pattern này.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Extract Property</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Tạo custom event property từ field trong payload của event đang chọn (sử dụng regex).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Add to Reference Set</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Thêm giá trị field (IP, username...) trực tiếp vào một Reference Set có sẵn.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Map Event</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Thay đổi QID mapping cho event này — ánh xạ lại sang QID khác phù hợp hơn.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NETWORK ACTIVITY ===== -->
+  <div class="tab-panel" id="tab-network">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">🌐</span>
+        <span class="screen-name">Network Activity Tab</span>
+        <span class="screen-path">/ Network Activity → Flow Results</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Network Activity hiển thị <strong>network flows</strong> — bản ghi về phiên giao tiếp giữa 2 hosts (source IP:port ↔ destination IP:port). Mỗi flow có: bytes, packets, duration, protocol, application... Giao diện tương tự Log Activity nhưng dữ liệu là flow records.
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar (tương tự Log Activity, có thêm)</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[View Streaming Flows]</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Xem flows theo thời gian thực từ Flow Processor. Có nút Pause.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[OverFlow Records]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Xem các overflow records — flow bị giới hạn bandwidth thu thập.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Export ▾]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Xuất flows ra CSV, XML.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Tune False Positive]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Tạo exception để loại bỏ flow pattern khỏi cảnh báo (ví dụ: backup traffic hợp lệ).</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Flow Detail View (click vào flow row)</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Source/Dest IP Link</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Click vào IP để xem Asset Profile, Whois info, network context.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Application Link</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Click vào tên application để filter flows theo application đó.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[View Full Content]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Xem toàn bộ content của flow (nếu QRadar Incident Forensics được cấu hình).</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ASSETS ===== -->
+  <div class="tab-panel" id="tab-assets">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">🏢</span>
+        <span class="screen-name">Assets Tab</span>
+        <span class="screen-path">/ Assets → Asset Profiles</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Assets tab quản lý <strong>asset profiles</strong> — hồ sơ các thiết bị, máy chủ được phát hiện trong mạng. Dữ liệu tích lũy từ log sources, network scans, vulnerability assessments. Hỗ trợ tra cứu CVE/lỗ hổng liên quan.
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar & Search</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Search Assets]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Tìm kiếm asset theo: IP, hostname, OS, open ports, vulnerability, MAC address...</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Save Search]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Lưu bộ tiêu chí tìm kiếm asset để tái sử dụng.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Import Assets]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Import danh sách asset từ file CSV/XML (từ scanner bên ngoài như Nessus, Qualys...).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Delete Selected]</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Xóa asset profile được chọn. Cần xác nhận. Dữ liệu từ log sources sẽ tạo lại asset.</div></div>
+          </div>
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Asset Profile Detail Page</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[View Events]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Chuyển sang Log Activity với filter Source IP = IP của asset này.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[View Offenses]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Chuyển sang Offenses với filter liên quan đến asset.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Research Vulnerabilities]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Mở Vulnerability Manager để xem CVE liên quan đến OS/ports của asset (yêu cầu license).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Edit Asset]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Chỉnh sửa thủ công thông tin asset: tên, owner, tags, notes...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REPORTS ===== -->
+  <div class="tab-panel" id="tab-reports">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">📈</span>
+        <span class="screen-name">Reports Tab</span>
+        <span class="screen-path">/ Reports → Report Templates</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Reports tạo và lên lịch báo cáo bảo mật. Hỗ trợ compliance templates (PCI DSS, HIPAA, SOX...), executive summaries, firewall activity reports. Xuất PDF, HTML. Có thể schedule tự động gửi email.
+        </div>
+
+        <div class="sub-sec">
+          <div class="sub-sec-title">Toolbar Báo Cáo</div>
+          <div class="btn-grid">
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Create Report]</span><span class="btn-type wizard">WIZARD</span></div><div class="btn-desc">Mở Report Wizard để tạo template mới: chọn layout (portrait/landscape), thêm containers (chart, table, text), cấu hình data source.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Generate Now]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tạo report ngay lập tức từ template đã chọn (không cần chờ schedule).</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Schedule]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Đặt lịch tự động tạo báo cáo: Daily, Weekly, Monthly. Gửi email hoặc lưu vào server.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Duplicate]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tạo bản sao của report template đã chọn để chỉnh sửa.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Delete]</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Xóa template hoặc kết quả báo cáo đã tạo.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[View Generated]</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Xem danh sách báo cáo đã được tạo trước đó. Tải về PDF/HTML.</div></div>
+            <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Assign to Group]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Phân loại report vào group (Compliance, Executive, Operations...) để tổ chức.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <div class="tab-panel" id="tab-admin">
+    <div class="screen-block">
+      <div class="screen-titlebar">
+        <span class="screen-icon">⚙️</span>
+        <span class="screen-name">Admin Tab</span>
+        <span class="screen-path">/ Admin → [System Configuration | Data Sources | Policies | Vulnerability | Remote Networks]</span>
+      </div>
+      <div class="screen-body">
+        <div class="info-box">
+          Admin tab chỉ dành cho <strong>Administrator users</strong>. Đây là trung tâm cấu hình toàn bộ hệ thống QRadar. Tổ chức theo các section chính.
+        </div>
+
+        <div class="admin-grid">
+          <div class="admin-card">
+            <div class="admin-card-icon">👤</div>
+            <div class="admin-card-title">User Management</div>
+            <div class="admin-card-items">
+              <ul>
+                <li>User Roles — Tạo/sửa vai trò</li>
+                <li>Security Profiles — Phạm vi truy cập</li>
+                <li>User Management — Tạo tài khoản</li>
+                <li>Authentication — LDAP, RADIUS</li>
+                <li>User Preferences — Timezone, locale</li>
+              </ul>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-icon">🔧</div>
+            <div class="admin-card-title">System Configuration</div>
+            <div class="admin-card-items">
+              <ul>
+                <li>System Settings — Cấu hình chung</li>
+                <li>License Management — Quản lý key</li>
+                <li>Console Settings — Timezone, locale</li>
+                <li>IF-MAP Configuration</li>
+                <li>Syslog — Forward logs</li>
+                <li>Backup & Recovery</li>
+              </ul>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-icon">📡</div>
+            <div class="admin-card-title">Data Sources</div>
+            <div class="admin-card-items">
+              <ul>
+                <li>Log Sources — Thêm/sửa nguồn log</li>
+                <li>Log Source Extensions</li>
+                <li>Log Source Groups</li>
+                <li>DSM Editor — Parse sự kiện</li>
+                <li>Protocols — Syslog, JDBC, SNMP...</li>
+                <li>Auto Discovery</li>
+              </ul>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-icon">🌐</div>
+            <div class="admin-card-title">Network Hierarchy</div>
+            <div class="admin-card-items">
+              <ul>
+                <li>Network Views — Phân cấp mạng</li>
+                <li>Add Network / Edit Range</li>
+                <li>Network Groups</li>
+                <li>Remote Networks</li>
+                <li>Remote Services</li>
+              </ul>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-icon">📚</div>
+            <div class="admin-card-title">Reference Data</div>
+            <div class="admin-card-items">
+              <ul>
+                <li>Reference Sets — Danh sách giá trị</li>
+                <li>Reference Maps — Key-value pairs</li>
+                <li>Reference Map of Sets</li>
+                <li>Reference Map of Maps</li>
+                <li>Reference Tables</li>
+              </ul>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-icon">🚀</div>
+            <div class="admin-card-title">Deploy & Maintenance</div>
+            <div class="admin-card-items">
+              <ul>
+                <li><strong>Deploy Changes</strong> — Áp dụng cấu hình</li>
+                <li>Advanced Search — Tắt/bật</li>
+                <li>SIM Reset — Xóa offense data</li>
+                <li>Restart Services</li>
+                <li>System Health Monitor</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-sec" style="margin-top:16px">
+          <div class="sub-sec-title">Nút [Deploy Changes] — Quan Trọng Nhất trong Admin</div>
+          <div class="btn-grid">
+            <div class="func-btn" style="border-color: var(--ibm-purple)">
+              <div class="func-btn-top"><span class="btn-label">[Deploy Changes]</span><span class="btn-type action">ACTION</span></div>
+              <div class="btn-desc" style="color: var(--text)">⚠️ <strong style="color:#a29bfe">Bắt buộc bấm sau mọi thay đổi cấu hình</strong> — log sources, network hierarchy, rules, reference sets. Không deploy thì thay đổi chưa có hiệu lực. Quá trình mất 30–120 giây, hệ thống vẫn hoạt động.</div>
+            </div>
+            <div class="func-btn" style="border-color: var(--ibm-red)">
+              <div class="func-btn-top"><span class="btn-label">[SIM Reset]</span><span class="btn-type danger">DANGER</span></div>
+              <div class="btn-desc">⚠️ Xóa toàn bộ offense, source IP, destination IP data khỏi database. Dùng để làm sạch sau khi tune. KHÔNG THỂ HOÀN TÁC. Mất vài phút tùy lượng data.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end tab-panels -->
+
+<!-- ===== SECTION 4: RULE WIZARD ===== -->
+<div class="sec-title" style="margin-top:32px">04 · Rule Wizard — 5 Bước Tạo Correlation Rule</div>
+
+<div class="wizard-steps">
+  <div class="wizard-step">
+    <div class="wizard-step-num">01</div>
+    <div class="wizard-step-name">Introduction</div>
+    <div class="wizard-step-desc">Giới thiệu loại rule. Nút: <em>Next ›</em></div>
+  </div>
+  <div class="wizard-arrow">›</div>
+  <div class="wizard-step">
+    <div class="wizard-step-num">02</div>
+    <div class="wizard-step-name">Rule Type</div>
+    <div class="wizard-step-desc">Chọn: Event / Flow / Common / Offense rule. Nút: <em>Back · Next ›</em></div>
+  </div>
+  <div class="wizard-arrow">›</div>
+  <div class="wizard-step current-step">
+    <div class="wizard-step-num">03</div>
+    <div class="wizard-step-name">Rule Test Stack Editor</div>
+    <div class="wizard-step-desc">Xây dựng ngăn xếp điều kiện. Nút: <em>Add » · Delete [x] · Back · Next ›</em></div>
+  </div>
+  <div class="wizard-arrow">›</div>
+  <div class="wizard-step">
+    <div class="wizard-step-num">04</div>
+    <div class="wizard-step-name">Rule Response</div>
+    <div class="wizard-step-desc">Cấu hình hành động: Create Offense, Email, Dispatch Event, Reference Set... Nút: <em>Back · Next ›</em></div>
+  </div>
+  <div class="wizard-arrow">›</div>
+  <div class="wizard-step">
+    <div class="wizard-step-num">05</div>
+    <div class="wizard-step-name">Rule Summary</div>
+    <div class="wizard-step-desc">Review toàn bộ, đặt tên rule, Finish. Nút: <em>Back · Finish ✓ · Cancel</em></div>
+  </div>
+</div>
+
+<!-- Rule Editor Detail -->
+<div class="screen-block">
+  <div class="screen-titlebar">
+    <span class="screen-icon">🔧</span>
+    <span class="screen-name">Step 3: Rule Test Stack Editor — Chi Tiết Giao Diện</span>
+    <span class="screen-path">/ Offenses → Rules → New Event Rule → Step 3</span>
+  </div>
+  <div class="screen-body">
+    <div class="rule-editor-layout">
+
+      <!-- Panel A -->
+      <div class="rule-panel">
+        <div class="rule-panel-hdr">PANEL A — Test Browser (Trình duyệt tests)</div>
+        <div class="rule-panel-body">
+          <div style="margin-bottom:10px; padding:8px; background:var(--bg2); border:1px solid var(--border);">
+            <div style="font-size:10px; color:var(--text-dim); margin-bottom:6px;">Filter: <input style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:2px 6px;font-size:10px;width:140px" placeholder="Nhập từ khóa..." /></div>
+            <div style="font-size:10px; color:var(--text-dim);">Test Group: <select style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:10px;padding:2px;"><option>All Tests</option><option>Event Property Tests</option><option>IP / Port Tests</option><option>Log Source Tests</option></select></div>
+          </div>
+          <div class="rule-test-item grp-label">Event Property Tests</div>
+          <div class="rule-test-item">when the event matches this search filter</div>
+          <div class="rule-test-item">when the event QID is one of these QIDs</div>
+          <div class="rule-test-item">when the event category is one of these categories</div>
+          <div class="rule-test-item">when the payload contains this string</div>
+          <div class="rule-test-item grp-label">IP / Port Tests</div>
+          <div class="rule-test-item">when the source IP is one of these IPs</div>
+          <div class="rule-test-item">when the destination IP is one of these IPs</div>
+          <div class="rule-test-item">when the destination port is one of these ports</div>
+          <div class="rule-test-item grp-label">Log Source Tests</div>
+          <div class="rule-test-item">when detected by one or more of these log source types</div>
+          <div class="rule-test-item">when detected by one or more of these log source groups</div>
+          <div class="rule-test-item grp-label">Function Tests</div>
+          <div class="rule-test-item">when this event is seen more than X times in Y minutes</div>
+          <div style="text-align:right;padding:6px 4px;"><button style="background:rgba(15,98,254,0.15);border:1px solid rgba(15,98,254,0.4);color:#74b9ff;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;">Add »</button></div>
+        </div>
+      </div>
+
+      <!-- Panel B -->
+      <div class="rule-panel">
+        <div class="rule-panel-hdr">PANEL B — Test Stack (Ngăn xếp điều kiện)</div>
+        <div class="rule-panel-body">
+          <div style="background:var(--bg2);padding:7px 10px;margin-bottom:10px;font-size:11px;border:1px solid var(--border);">
+            Apply rule when <select style="background:var(--bg);border:1px solid var(--border);color:var(--accent);font-size:11px;font-weight:700;padding:1px 4px;"><option>ALL</option><option>ANY</option></select> conditions match:
+          </div>
+          <div class="condition-entry"><span class="cond-x">✕</span><span class="cond-text">when the event(s) were detected by one or more of <span class="cond-link">[Microsoft Windows Security Event Log]</span></span></div>
+          <div class="condition-entry"><span class="cond-x">✕</span><span class="cond-text">and when the event QID is one of <span class="cond-link">[4720, 4726]</span></span></div>
+          <div class="condition-entry"><span class="cond-x">✕</span><span class="cond-text">and when the source IP is one of <span class="cond-link">these IP addresses</span> ← chưa cấu hình</span></div>
+          <div style="margin-top:12px; padding:10px; background:var(--bg2); border:1px dashed var(--border); font-size:10px; color:var(--text-dim)">
+            <strong style="color:#a29bfe">Inline Config Links:</strong> Khi click vào text màu cyan trong condition → mở popup dialog để nhập/chọn giá trị cụ thể. Hyperlinks chưa được cấu hình hiển thị text mô tả; đã cấu hình hiển thị giá trị thực trong [brackets].
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sub-sec" style="margin-top:16px">
+      <div class="sub-sec-title">Tất Cả Nút Bấm Trong Rule Test Stack Editor</div>
+      <div class="btn-grid">
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Filter: [text input]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Lọc danh sách tests trong Panel A theo từ khóa. Client-side filtering tức thì.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Test Group: [dropdown]</span><span class="btn-type filter">FILTER</span></div><div class="btn-desc">Lọc tests theo category: All / Event / IP-Port / LogSource / Network / RefData / Function / DateTime.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Add »] Button</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Thêm test đang được chọn (highlight) trong Panel A vào cuối stack trong Panel B. Double-click vào item cũng có cùng tác dụng.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">ALL / ANY [dropdown]</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc">Chuyển logic connector giữa AND (ALL conditions phải đúng) và OR (ANY condition đúng là đủ).</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[✕] Delete per row</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Xóa condition khỏi stack. Không có confirm dialog — xóa ngay lập tức.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Inline Hyperlinks</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Click vào text màu xanh trong mỗi condition để mở Config Dialog. Dialog có text input, multi-select list (Available ↔ Selected), hoặc AQL filter editor.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Rule Name [input]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Trường tên rule ở đầu trang wizard. Bắt buộc điền trước khi Finish.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[‹ Back] Button</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Quay lại Step 2 (Rule Type). Stack đã thêm vẫn được giữ nguyên.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Next ›] Button</span><span class="btn-type nav">NAV</span></div><div class="btn-desc">Tiến đến Step 4 (Rule Response). Validation: báo lỗi nếu stack rỗng.</div></div>
+        <div class="func-btn"><div class="func-btn-top"><span class="btn-label">[Cancel] Button</span><span class="btn-type danger">DANGER</span></div><div class="btn-desc">Thoát Wizard, hủy toàn bộ thay đổi. Có confirm dialog "Are you sure?"</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: RULE RESPONSE ===== -->
+<div class="sec-title">05 · Rule Response — Step 4 Hành Động Khi Rule Kích Hoạt</div>
+<div class="screen-block">
+  <div class="screen-titlebar">
+    <span class="screen-icon">⚡</span>
+    <span class="screen-name">Step 4: Rule Response — Hành Động Sau Khi Rule Match</span>
+  </div>
+  <div class="screen-body">
+    <div class="btn-grid">
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Ensure the detected event is part of an offense</span><span class="btn-type toggle">TOGGLE</span></div><div class="btn-desc"><strong>Checkbox quan trọng nhất.</strong> Nếu bật: tạo/cập nhật Offense khi rule match. Nếu tắt: chỉ ghi nhận event không tạo offense.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Index offense based on [dropdown]</span><span class="btn-type menu">MENU</span></div><div class="btn-desc">Chọn cách gom nhóm offense: Source IP, Destination IP, Username, QID, Hostname... Các event cùng key sẽ vào cùng offense.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Annotate this offense [text]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tên/ghi chú xuất hiện trên offense được tạo ra. Thường đặt trùng với tên rule.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Dispatch New Event [checkbox + config]</span><span class="btn-type modal">MODAL</span></div><div class="btn-desc">Tạo synthetic event khi rule trigger: đặt Event Name, Description, High/Low Category. Hữu ích cho correlation chain.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Notify [checkbox + config]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Gửi email notification khi rule match. Cấu hình: địa chỉ email, subject, nội dung.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Add to Reference Set [checkbox]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Tự động thêm field value (source IP, username...) vào Reference Set khi rule match.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">SNMP Trap [checkbox]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Gửi SNMP trap đến địa chỉ quản lý mạng khi rule trigger.</div></div>
+      <div class="func-btn"><div class="func-btn-top"><span class="btn-label">Severity/Credibility/Relevance [sliders]</span><span class="btn-type action">ACTION</span></div><div class="btn-desc">Điều chỉnh 3 chỉ số của offense được tạo ra. Magnitude = f(Severity, Credibility, Relevance) — 1 đến 10.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 6: GLOBAL UI ELEMENTS ===== -->
+<div class="sec-title">06 · Các Thành Phần Giao Diện Toàn Cục</div>
+<div class="screen-block">
+  <div class="screen-titlebar">
+    <span class="screen-icon">🔲</span>
+    <span class="screen-name">Global UI Elements — Hiển thị trên mọi trang</span>
+  </div>
+  <div class="screen-body">
+    <table class="spec-table">
+      <thead><tr><th>Thành phần</th><th>Vị trí</th><th>Chức năng</th></tr></thead>
+      <tbody>
+        <tr><td>[IBM Logo]</td><td>Header trái</td><td>Trang trí, nhận diện thương hiệu. Không có action click.</td></tr>
+        <tr><td>[Product Name]</td><td>Header giữa-trái</td><td>"IBM Security QRadar SIEM" — nhận diện sản phẩm, không clickable.</td></tr>
+        <tr><td>[Username ▾]</td><td>Header phải</td><td>Dropdown: User Preferences (locale, timezone, mật khẩu, email, popup notifications), Log Out.</td></tr>
+        <tr><td>[? Help]</td><td>Header phải</td><td>Mở help context-sensitive trong tab mới. Context-sensitive = nội dung phù hợp với màn hình đang xem. Không cần internet nếu dùng Console Help; cần internet nếu mở IBM Knowledge Center.</td></tr>
+        <tr><td>Tab Navigation Bar</td><td>Dưới Header</td><td>7 tabs chính. Tab active = highlight màu trắng/xanh. Click để chuyển module.</td></tr>
+        <tr><td>Breadcrumb Trail</td><td>Dưới Tab Bar</td><td>Hiển thị đường dẫn hiện tại (vd: Offenses > Rules > Rule Wizard). Click để quay lại bước trước.</td></tr>
+        <tr><td>Popup Notifications</td><td>Bottom-right corner</td><td>Toast notifications cho sự kiện hệ thống. Bật/tắt qua User Preferences → Enable Popup Notifications.</td></tr>
+        <tr><td>Status Bar (Log/Net Activity)</td><td>Cuối danh sách kết quả</td><td>Hiển thị: tổng số kết quả, trang hiện tại, thời gian query, nút phân trang.</td></tr>
+        <tr><td>Timer Indicator</td><td>Góc dashboard items</td><td>Đếm ngược đến lần refresh tiếp theo. Nhấp nháy đỏ khi đang pause.</td></tr>
+        <tr><td>Right-Click Context Menu</td><td>Mọi row trong bảng</td><td>Menu ngữ cảnh với actions phù hợp: View Details, Filter, Add to Reference Set, Open in new tab...</td></tr>
+        <tr><td>Column Sort (▲▼)</td><td>Header cột bảng</td><td>Click header cột để sort tăng/giảm. Mũi tên chỉ hướng sort hiện tại.</td></tr>
+        <tr><td>Pagination (◄ 1 2 3 ►)</td><td>Dưới bảng kết quả</td><td>Phân trang kết quả. Chọn số items/trang: 25, 50, 100, 250.</td></tr>
+        <tr><td>Quick Filter Bar</td><td>Trên bảng (Log/Net Activity)</td><td>Ô nhập AQL-like syntax để filter nhanh mà không mở dialog đầy đủ.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== SECTION 7: DATA FLOW ===== -->
+<div class="sec-title">07 · Luồng Dữ Liệu — Từ Log Source Đến Offense</div>
+<div class="flow-diagram">
+  <div class="flow-node">
+    <div class="flow-node-title">1. Log Source</div>
+    <div class="flow-node-sub">Syslog, SNMP, WinRM, JDBC, API — gửi log thô đến QRadar</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">
+    <div class="flow-node-title">2. DSM Parser</div>
+    <div class="flow-node-sub">Normalize raw log → structured event fields (sourceip, username, category...)</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">
+    <div class="flow-node-title">3. Event Processor</div>
+    <div class="flow-node-sub">Custom Rules Engine (CRE) chạy rules trên event stream theo thời gian thực</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node highlighted">
+    <div class="flow-node-title">4. Magistrate</div>
+    <div class="flow-node-sub">Tạo/cập nhật Offenses. Tính Magnitude từ Severity + Credibility + Relevance</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">
+    <div class="flow-node-title">5. Ariel DB</div>
+    <div class="flow-node-sub">Lưu trữ events/flows. AQL query qua Log Activity / Network Activity tabs</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">
+    <div class="flow-node-title">6. GUI Console</div>
+    <div class="flow-node-sub">Analyst điều tra qua Dashboard, Offenses, Log Activity tabs</div>
+  </div>
+</div>
+
+</div><!-- end canvas -->
+
+<!-- ===== FOOTER ===== -->
+<div class="diagram-footer">
+  <span>IBM QRadar SIEM · Functional Diagram v1.0 · Reference: QRadar 7.3–7.5 User Guide + Admin Guide + Architecture Guide</span>
+  <span>Tạo bởi Claude · Dùng cho mục đích tái tạo giao diện frontend</span>
+</div>
+
+<script>
+function showTab(tabName) {
+  // Deactivate all
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  // Activate selected
+  const panel = document.getElementById('tab-' + tabName);
+  if (panel) panel.classList.add('active');
+
+  // Find button by text
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const textMap = {
+      dashboard: 'Dashboard',
+      offenses: 'Offenses',
+      logactivity: 'Log Activity',
+      network: 'Network Activity',
+      assets: 'Assets',
+      reports: 'Reports',
+      admin: 'Admin'
+    };
+    if (btn.textContent.includes(textMap[tabName])) {
+      btn.classList.add('active');
+    }
+  });
+}
+</script>
+</body>
+</html>

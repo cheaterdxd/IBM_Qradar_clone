@@ -62,13 +62,18 @@ const TestBrowser: React.FC<TestBrowserProps> = ({
                     <label>Test Group:</label>
                     <select value={testGroup} onChange={(e) => setTestGroup(e.target.value)}>
                         <option value="">All Tests</option>
+                        <option disabled>──────────</option>
                         <option value="event">Event Property Tests</option>
                         <option value="ip">IP / Port Tests</option>
                         <option value="logsource">Log Source Tests</option>
-                        <option value="network">Network Property Tests</option>
+                        <option value="network">Network / Zone Tests</option>
+                        <option value="datetime">Date / Time Tests</option>
                         <option value="refdata">Reference Data Tests</option>
                         <option value="function">Function Tests</option>
-                        <option value="datetime">Date / Time Tests</option>
+                        <option value="hostprofile">Host Profile Tests</option>
+                        <option value="customprop">Custom Property Tests</option>
+                        <option value="offense">Offense Tests</option>
+                        <option value="flow">Flow Property Tests</option>
                     </select>
                 </div>
             </div>

@@ -1,301 +1,345 @@
-/* ====== CLONE SIEM DESIGN SYSTEM ====== */
+/* ==========================================================================
+   QRadar SIEM - Color Palette & Global Variables
+   Based on IBM QRadar SIEM 7.3-7.5 Technical Specification
+   ========================================================================== */
 
-/* CSS Variables */
 :root {
-    /* Colors */
-    --qr-header-bg: #003366;
-    --qr-tab-bg: #2B4F7A;
+    /* Primary Brand Colors */
+    --qr-navy-header: #003366;
+    --qr-primary-blue: #0066CC;
+    --qr-primary-blue-hover: #004999;
+
+    /* Tab Navigation */
+    --qr-tab-bar-bg: #2B4F7A;
     --qr-tab-active-bg: #3A6EA5;
-    --qr-tab-inactive-text: #9ABBE0;
+    --qr-tab-text: #9ABBE0;
+
+    /* Panel & Container Backgrounds */
     --qr-panel-header-bg: #C4D8EB;
-    --qr-panel-header-text: #003366;
-    --qr-primary: #0066CC;
-    --qr-primary-hover: #004999;
-    --qr-primary-text: #FFFFFF;
-    --qr-highlight-bg: #D9EAF7;
-    --qr-content-bg: #F0F4F8;
+    --qr-breadcrumb-bg: #E8EEF4;
+    --qr-toolbar-bg: #E8EEF4;
+    --qr-page-bg: #F0F4F8;
     --qr-white: #FFFFFF;
-    --qr-gray-light: #F5F5F5;
-    --qr-border: #CCCCCC;
+    --qr-light-gray-bg: #F5F5F5;
+
+    /* Borders */
+    --qr-border-standard: #CCCCCC;
     --qr-border-dark: #999999;
+    --qr-border-divider: #AAAAAA;
+
+    /* Text Colors */
     --qr-text-primary: #333333;
     --qr-text-secondary: #666666;
-    --qr-link: #0066CC;
+    --qr-text-muted: #555555;
+    --qr-text-light: #999999;
+
+    /* Interactive States */
+    --qr-selected-row: #D9EAF7;
+    --qr-hover-light: #F5FBFF;
+    --qr-hover-bg: #D0D8E0;
+
+    /* Status Colors */
     --qr-danger: #CC0000;
-    --qr-footer-bg: #D5DEE8;
+    --qr-danger-bg: #FFEEEE;
+    --qr-success: #006600;
+    --qr-warning: #CC7700;
+
+    /* Wizard */
+    --qr-wizard-footer-bg: #D5DEE8;
+
+    /* Configured Value Styling */
+    --qr-configured-bg: #EBF5FF;
+    --qr-configured-border: #99CCFF;
 
     /* Typography */
-    --qr-font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-    --qr-font-size-sm: 11px;
-    --qr-font-size-base: 12px;
-    --qr-font-size-lg: 14px;
-
-    /* Spacing */
-    --qr-padding-sm: 4px;
-    --qr-padding-md: 8px;
-    --qr-padding-lg: 12px;
+    --qr-font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --qr-font-size-14: 14px;
+    --qr-font-size-12: 12px;
+    --qr-font-size-11: 11px;
+    --qr-font-size-10: 10px;
+    --qr-font-size-9: 9px;
 }
 
-/* ====== RESET & BASE ====== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* ==========================================================================
+   Global QRadar Button Styles
+   NO border-radius, NO animations, instant state changes
+   ========================================================================== */
 
-body {
-    font-family: var(--qr-font);
-    font-size: var(--qr-font-size-base);
-    color: var(--qr-text-primary);
-    background: var(--qr-content-bg);
-    min-width: 1280px;
-}
-
-a {
-    color: var(--qr-link);
-    text-decoration: underline;
+.btn-primary {
+    background: var(--qr-primary-blue);
+    border: none;
+    color: var(--qr-white);
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
+    font-weight: bold;
+    padding: 5px 18px;
     cursor: pointer;
+    border-radius: 0;
+    transition: none;
 }
 
-a:hover {
-    color: var(--qr-primary-hover);
+.btn-primary:hover:not(:disabled) {
+    background: var(--qr-primary-blue-hover);
 }
 
-/* ====== CLONE SIEM APP WRAPPER ====== */
-.qr-app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* ====== HEADER ====== */
-.qr-header {
-    background: var(--qr-header-bg);
-    height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    color: white;
-    flex-shrink: 0;
+.btn-secondary {
+    background: #E8E8E8;
+    border: 1px solid var(--qr-border-dark);
+    color: var(--qr-text-primary);
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
+    font-weight: normal;
+    padding: 5px 18px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: none;
 }
 
-.qr-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    font-size: var(--qr-font-size-lg);
-    font-weight: bold;
+.btn-secondary:hover {
+    background: var(--qr-hover-bg);
 }
 
-.qr-logo-box {
-    background: white;
-    color: var(--qr-header-bg);
-    font-size: 13px;
-    font-weight: bold;
+.btn-danger {
+    background: var(--qr-white);
+    border: 1px solid var(--qr-danger);
+    color: var(--qr-danger);
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
+    padding: 5px 18px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: none;
+}
+
+.btn-danger:hover {
+    background: var(--qr-danger-bg);
+}
+
+/* ==========================================================================
+   Standard Form Inputs (QRadar Spec)
+   ========================================================================== */
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    background: var(--qr-white);
+    border: 1px solid var(--qr-border-dark);
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
+    color: var(--qr-text-primary);
     padding: 2px 6px;
-    letter-spacing: -1px;
+    border-radius: 0;
 }
 
-.qr-product-name {
-    flex: 1;
-    font-size: var(--qr-font-size-lg);
-    font-weight: bold;
-    margin-left: 12px;
+input[type="text"],
+input[type="number"],
+select {
+    height: 22px;
 }
 
-.qr-header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: var(--qr-font-size-base);
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 1px solid var(--qr-primary-blue);
+    box-shadow: none;
 }
 
-.qr-header-right a {
-    color: var(--qr-tab-inactive-text);
-    text-decoration: none;
-}
+/* ==========================================================================
+   Modal Overlay & Dialog Box (QRadar Spec)
+   ========================================================================== */
 
-.qr-help-btn {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid var(--qr-tab-inactive-text);
+.qr-modal-overlay,
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    color: white;
-    cursor: pointer;
+    z-index: 1000;
+    backdrop-filter: none;
 }
 
-/* ====== TAB NAVIGATION ====== */
-.qr-tabs {
-    background: var(--qr-tab-bg);
-    height: 30px;
-    display: flex;
-    align-items: stretch;
-    padding: 0 8px;
-    flex-shrink: 0;
-}
-
-.qr-tab {
-    padding: 0 14px;
-    display: flex;
-    align-items: center;
-    color: var(--qr-tab-inactive-text);
-    font-size: var(--qr-font-size-base);
-    cursor: pointer;
-    text-decoration: none;
-    border-bottom: 2px solid transparent;
-}
-
-.qr-tab:hover {
-    color: white;
-}
-
-.qr-tab.active {
-    color: white;
-    border-bottom-color: white;
-    background: var(--qr-tab-active-bg);
-}
-
-/* ====== WIZARD STEPS ====== */
-.qr-wizard-steps {
-    background: #E8EEF4;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    border-bottom: 1px solid var(--qr-border);
-    font-size: var(--qr-font-size-sm);
-    flex-shrink: 0;
-}
-
-.qr-step {
-    color: var(--qr-text-secondary);
-}
-
-.qr-step.done {
-    color: var(--qr-primary);
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.qr-step.current {
-    color: var(--qr-header-bg);
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.qr-step-sep {
-    color: #999;
-    margin: 0 6px;
-}
-
-/* ====== MAIN CONTENT ====== */
-.qr-wizard-content {
-    padding: 10px 14px;
-    flex: 1;
+.qr-modal-dialog,
+.modal-box {
+    position: absolute;
+    background: var(--qr-white);
+    border: 1px solid #666666;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    width: 680px;
+    max-height: 80vh;
     overflow-y: auto;
+    border-radius: 0;
 }
 
-/* ====== RULE NAME BAR ====== */
-.qr-rule-name-bar {
-    background: #EBF0F6;
-    border: 1px solid var(--qr-border);
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.qr-rule-name-bar label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--qr-font-size-base);
+/* Modal Title Bar (Blue header per spec) */
+.qr-modal-header,
+.modal-title {
+    height: 24px;
+    background: var(--qr-primary-blue);
+    color: var(--qr-white);
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
     font-weight: bold;
-}
-
-.qr-rule-name-bar input {
-    border: 1px solid var(--qr-border-dark);
-    height: 22px;
-    padding: 2px 6px;
-    font-family: var(--qr-font);
-    font-size: var(--qr-font-size-base);
-    background: white;
-}
-
-.qr-rule-name-input {
-    width: 320px;
-}
-
-.qr-notes-input {
-    width: 260px;
-}
-
-.qr-rule-name-bar .notes-label {
-    font-weight: normal;
-}
-
-/* ====== WIZARD FOOTER ====== */
-.qr-wizard-footer {
-    background: var(--qr-footer-bg);
-    border-top: 2px solid #AAAAAA;
-    height: 48px;
+    padding: 4px 10px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: flex-end;
-    padding: 0 16px;
-    gap: 8px;
-    flex-shrink: 0;
 }
 
-.btn-back,
-.btn-cancel {
-    background: #E8E8E8;
-    border: 1px solid var(--qr-border-dark);
-    padding: 5px 18px;
-    font-family: var(--qr-font);
-    font-size: var(--qr-font-size-base);
-    color: var(--qr-text-primary);
-    cursor: pointer;
+.qr-modal-title {
+    flex: 1;
 }
 
-.btn-back:hover,
-.btn-cancel:hover {
-    background: #D0D8E0;
-}
-
-.btn-next {
-    background: var(--qr-primary);
+.qr-modal-close,
+.modal-close-btn {
+    background: none;
     border: none;
-    padding: 5px 22px;
-    font-family: var(--qr-font);
-    font-size: var(--qr-font-size-base);
+    color: var(--qr-white);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-modal-close:hover,
+.modal-close-btn:hover {
+    opacity: 0.8;
+}
+
+/* Modal Body */
+.qr-modal-body,
+.modal-body {
+    padding: 16px;
+}
+
+/* Modal Footer */
+.qr-modal-footer,
+.modal-footer {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid var(--qr-border-standard);
+}
+
+/* ==========================================================================
+   Config Dialog Specific Styles
+   ========================================================================== */
+
+/* Type 1: Single Text Input */
+.qr-dialog-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--qr-font-family);
+    font-size: var(--qr-font-size-12);
     font-weight: bold;
-    color: white;
+    color: var(--qr-text-primary);
+}
+
+.qr-dialog-form input {
+    width: 100%;
+}
+
+/* Type 2: Multi-Select Layout */
+.qr-dialog-multiselect {
+    font-family: var(--qr-font-family);
+}
+
+.qr-multiselect-search {
+    margin-bottom: 12px;
+}
+
+.qr-multiselect-search label {
+    font-size: var(--qr-font-size-11);
+    color: var(--qr-text-primary);
+    margin-right: 8px;
+}
+
+.qr-multiselect-search input {
+    width: 200px;
+}
+
+.qr-multiselect-panels,
+.modal-list-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.qr-multiselect-panel,
+.modal-list-pane {
+    flex: 1;
+}
+
+.qr-panel-label {
+    font-size: var(--qr-font-size-11);
+    font-weight: bold;
+    color: var(--qr-text-primary);
+    margin-bottom: 4px;
+}
+
+.qr-panel-list,
+.modal-list-box {
+    border: 1px solid var(--qr-border-standard);
+    height: 120px;
+    overflow-y: scroll;
+    background: var(--qr-white);
+}
+
+.qr-list-item,
+.mlist-item {
+    padding: 3px 8px;
+    font-size: var(--qr-font-size-11);
     cursor: pointer;
 }
 
-.btn-next:hover {
-    background: var(--qr-primary-hover);
+.qr-list-item:hover,
+.mlist-item:hover {
+    background: var(--qr-selected-row);
 }
 
-/* ====== ERROR MESSAGE ====== */
-.error-msg {
-    background: #FFEEEE;
-    border: 1px solid var(--qr-danger);
-    color: var(--qr-danger);
-    padding: 6px 10px;
-    font-size: var(--qr-font-size-base);
-    margin-bottom: 8px;
-    display: none;
+.qr-list-empty {
+    padding: 30px 10px;
+    text-align: center;
+    font-size: var(--qr-font-size-11);
+    color: var(--qr-text-secondary);
+    font-style: italic;
 }
 
-.error-msg.show {
-    display: block;
+.qr-multiselect-manual,
+.modal-manual {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.qr-multiselect-manual label,
+.modal-manual label {
+    font-size: var(--qr-font-size-11);
+    color: var(--qr-text-primary);
+}
+
+.qr-multiselect-manual input,
+.modal-manual input {
+    flex: 1;
+}
+
+.btn-add-manual,
+.btn-sm {
+    padding: 3px 12px;
+    font-size: var(--qr-font-size-11);
 }

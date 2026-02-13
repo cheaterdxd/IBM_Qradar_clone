@@ -20,6 +20,9 @@ const ConfigDialog: React.FC<ConfigDialogProps> = ({
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [manualInput, setManualInput] = useState('');
+    const [aqlValue, setAqlValue] = useState('');
+    const [selectValue, setSelectValue] = useState('');
+    const [numberValue, setNumberValue] = useState('');
 
     useEffect(() => {
         if (isOpen && param) {
@@ -27,6 +30,12 @@ const ConfigDialog: React.FC<ConfigDialogProps> = ({
                 setTextValue(currentValue || '');
             } else if (param.type === 'multiselect') {
                 setSelectedItems(currentValue ? currentValue.split(', ') : []);
+            } else if (param.type === 'aql') {
+                setAqlValue(currentValue || '');
+            } else if (param.type === 'select') {
+                setSelectValue(currentValue || '');
+            } else if (param.type === 'number') {
+                setNumberValue(currentValue || '');
             }
         }
     }, [isOpen, param, currentValue]);
@@ -38,6 +47,12 @@ const ConfigDialog: React.FC<ConfigDialogProps> = ({
             onSubmit(textValue);
         } else if (param.type === 'multiselect') {
             onSubmit(selectedItems.join(', '));
+        } else if (param.type === 'aql') {
+            onSubmit(aqlValue);
+        } else if (param.type === 'select') {
+            onSubmit(selectValue);
+        } else if (param.type === 'number') {
+            onSubmit(numberValue);
         }
         onClose();
     };
@@ -81,6 +96,91 @@ const ConfigDialog: React.FC<ConfigDialogProps> = ({
                                     placeholder={param.placeholder || ''}
                                     autoFocus
                                 />
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn-submit" onClick={handleSubmit}>
+                                    Submit
+                                </button>
+                                <button className="btn-dialog-cancel" onClick={onClose}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </>
+                    ) : param.type === 'aql' ? (
+                        <>
+                            <div className="modal-field">
+                                <label>{param.label}:</label>
+                                <div style={{ fontSize: '11px', color: '#666', marginBottom: '8px' }}>
+                                    Example: <code>sourceip = '192.168.1.1' AND category = 5004</code>
+                                </div>
+                                <textarea
+                                    value={aqlValue}
+                                    onChange={(e) => setAqlValue(e.target.value)}
+                                    placeholder={param.placeholder || 'Enter AQL WHERE clause...'}
+                                    autoFocus
+                                    style={{
+                                        width: '100%',
+                                        height: '60px',
+                                        fontFamily: 'Courier New, monospace',
+                                        fontSize: '12px'
+                                    }}
+                                />
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn-submit" onClick={handleSubmit}>
+                                    Submit
+                                </button>
+                                <button className="btn-dialog-cancel" onClick={onClose}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </>
+                    ) : param.type === 'select' ? (
+                        <>
+                            <div className="modal-field">
+                                <label>{param.label}:</label>
+                                <select
+                                    value={selectValue}
+                                    onChange={(e) => setSelectValue(e.target.value)}
+                                    autoFocus
+                                    style={{ width: '100%' }}
+                                >
+                                    <option value="">-- Select --</option>
+                                    {(param.options || []).map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn-submit" onClick={handleSubmit}>
+                                    Submit
+                                </button>
+                                <button className="btn-dialog-cancel" onClick={onClose}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </>
+                    ) : param.type === 'number' ? (
+                        <>
+                            <div className="modal-field">
+                                <label>{param.label}:</label>
+                                <input
+                                    type="number"
+                                    value={numberValue}
+                                    onChange={(e) => setNumberValue(e.target.value)}
+                                    placeholder={param.placeholder || ''}
+                                    min={param.min}
+                                    max={param.max}
+                                    autoFocus
+                                    style={{ width: '100%' }}
+                                />
+                                {(param.min !== undefined || param.max !== undefined) && (
+                                    <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
+                                        {param.min !== undefined && `Min: ${param.min}`}
+                                        {param.min !== undefined && param.max !== undefined && ' | '}
+                                        {param.max !== undefined && `Max: ${param.max}`}
+                                    </div>
+                                )}
                             </div>
                             <div className="modal-footer">
                                 <button className="btn-submit" onClick={handleSubmit}>

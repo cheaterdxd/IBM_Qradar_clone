@@ -1,0 +1,164 @@
+/* ==========================================================================
+   QRadar SIEM - Global Application Styling
+   Based on IBM QRadar SIEM 7.3-7.5 Technical Specification
+   NO glassmorphism, NO animations, NO border-radius
+   ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--qr-page-bg, #F0F4F8);
+  color: var(--qr-text-primary, #333333);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   QRadar Application Layout
+   ========================================================================== */
+
+.qr-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--qr-page-bg);
+}
+
+.qr-wizard-content {
+  flex: 1;
+  padding: 16px;
+  background: var(--qr-white);
+}
+
+.qr-test-editor {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* ==========================================================================
+   Error Messages (QRadar Spec)
+   ========================================================================== */
+
+.error-msg {
+  display: none;
+  background: var(--qr-danger-bg, #FFEEEE);
+  border: 1px solid var(--qr-danger, #CC0000);
+  color: var(--qr-danger);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.error-msg.show {
+  display: block;
+}
+
+/* ==========================================================================
+   Scrollbar (QRadar-compliant)
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--qr-light-gray-bg, #F5F5F5);
+  border: 1px solid var(--qr-border-standard, #CCCCCC);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E0E0E0;
+  border: 1px solid var(--qr-border-standard, #CCCCCC);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D0D0D0;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--qr-light-gray-bg, #F5F5F5);
+}
+
+/* ==========================================================================
+   Utility Classes (Minimal, QRadar-aligned)
+   ========================================================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+/* ==========================================================================
+   Focus States (QRadar Spec)
+   ========================================================================== */
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 1px solid var(--qr-primary-blue, #0066CC);
+  outline-offset: 1px;
+}
+
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ==========================================================================
+   Disabled States
+   ========================================================================== */
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Selection Highlight
+   ========================================================================== */
+
+::selection {
+  background: var(--qr-selected-row, #D9EAF7);
+  color: var(--qr-text-primary, #333333);
+}

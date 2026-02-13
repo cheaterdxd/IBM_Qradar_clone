@@ -15,6 +15,8 @@ interface TestStackProps {
     onLogicChange: (logic: 'ALL' | 'ANY') => void;
     onSelectCondition: (id: string) => void;
     onDeleteCondition: (id: string) => void;
+    onMoveConditionUp: (id: string) => void;
+    onMoveConditionDown: (id: string) => void;
     onConfigureParam: (conditionId: string, param: QRadarTestParam) => void;
 }
 
@@ -25,6 +27,8 @@ const TestStack: React.FC<TestStackProps> = ({
     onLogicChange,
     onSelectCondition,
     onDeleteCondition,
+    onMoveConditionUp,
+    onMoveConditionDown,
     onConfigureParam
 }) => {
     return (
@@ -52,9 +56,12 @@ const TestStack: React.FC<TestStackProps> = ({
                             key={condition.id}
                             condition={condition}
                             index={index}
+                            totalCount={conditions.length}
                             isSelected={selectedConditionId === condition.id}
                             onSelect={() => onSelectCondition(condition.id)}
                             onDelete={() => onDeleteCondition(condition.id)}
+                            onMoveUp={() => onMoveConditionUp(condition.id)}
+                            onMoveDown={() => onMoveConditionDown(condition.id)}
                             onConfigureParam={(param) => onConfigureParam(condition.id, param)}
                         />
                     ))
